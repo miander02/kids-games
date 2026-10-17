@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Dakota Learning v0.1.3</title>
+  <style>
+    :root{
+      --bg:#f6f8fb;--card:#ffffff;--text:#1f2937;--muted:#6b7280;--border:#dfe5ec;
+      --accent:#315f9b;--accent2:#264d7c;--good:#2f7d4a;--warn:#8a651f;--bad:#a43f3f;
+      --soft:#eef4fb;--star:#c6901d;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--text)}
+    button,input,select,textarea{font:inherit}
+    button{cursor:pointer}
+    .app{max-width:980px;margin:0 auto;padding:20px}
+    .topbar{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:18px}
+    .topbar-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+    .brand{font-weight:800;font-size:1.2rem}
+    .date{color:var(--muted);font-size:.95rem}
+    .page{display:none}.page.active{display:block}
+    .hero{padding:26px 22px 18px;text-align:center}
+    .hero h1{font-size:clamp(2rem,5vw,3.25rem);margin:0 0 6px}.hero p{margin:8px 0;color:var(--muted);font-size:1.1rem}
+    .starsline{margin-top:10px;font-weight:800;color:var(--star)}
+    .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+    .grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:18px}
+    .action{min-height:105px;border:1px solid var(--border);border-radius:18px;background:#fff;padding:16px;text-align:left;display:flex;flex-direction:column;justify-content:center;gap:5px}
+    .action:hover{border-color:#b8c5d3}.action .icon{font-size:1.7rem}.action strong{font-size:1.15rem}.action span{color:var(--muted);font-size:.92rem}
+    .wide{grid-column:1/-1}
+    .btn{border:0;border-radius:12px;padding:12px 16px;font-weight:750;background:var(--accent);color:white;min-height:46px}
+    .btn:hover{background:var(--accent2)}.btn.secondary{background:#fff;color:var(--text);border:1px solid var(--border)}
+    .btn.good{background:var(--good)}.btn.bad{background:var(--bad)}
+    .btnrow{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:18px}
+    .back{background:none;border:0;color:var(--accent);font-weight:700;padding:8px 0}
+    h2{font-size:1.6rem;margin:4px 0 16px}.sub{color:var(--muted);margin-top:-8px;margin-bottom:18px}
+    label{font-weight:700;display:block;margin-bottom:6px}.field{margin-bottom:14px}
+    input[type=text],input[type=number],input[type=password],select,textarea{width:100%;border:1px solid #cfd7e1;border-radius:12px;padding:12px;background:white;color:var(--text)}
+    textarea{min-height:120px;resize:vertical}
+    .choices{display:flex;gap:10px;flex-wrap:wrap}
+    .chip{border:1px solid var(--border);background:#fff;border-radius:999px;padding:10px 14px;font-weight:700}
+    .chip.active{background:var(--soft);border-color:#9ab4d0}
+    .questionwrap{text-align:center;padding:18px}
+    .version{font-size:.72rem;color:var(--muted);font-weight:700;margin-left:5px}
+    .columnworkwrap{display:inline-block;max-width:100%;margin:8px auto 4px;font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
+    .columnworklabel{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:var(--muted);font-size:.86rem;font-weight:750;text-align:center;margin-bottom:6px}
+    .column-grid{--cols:3;display:grid;grid-template-columns:30px repeat(var(--cols),minmax(40px,56px));gap:5px;align-items:center;justify-content:center;max-width:100%}
+    .column-grid .op{font-size:1.9rem;font-weight:850;text-align:center}
+    .column-grid .digit{font-size:2rem;font-weight:850;text-align:center;min-height:46px;display:flex;align-items:center;justify-content:center}
+    .column-grid .workbox{width:100%;height:42px;border:1px dashed #9aa8b8;border-radius:9px;text-align:center;font:800 1.05rem system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:#fbfdff;color:var(--text);padding:2px}
+    .column-grid .workbox:focus{outline:3px solid rgba(49,95,155,.22);border-color:var(--accent)}
+    .column-grid .rulecell{border-top:3px solid var(--text);height:5px}
+    .column-answer-note{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:var(--muted);font-size:.86rem;margin-top:8px;text-align:center}
+    .spell-keyboard{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:7px;max-width:720px;margin:16px auto 4px}
+    .spell-keyboard button{min-height:48px;border-radius:11px;border:1px solid var(--border);background:#fff;font-size:1.05rem;font-weight:850;padding:4px}
+    .spell-keyboard button.control{background:var(--soft);font-size:.92rem}
+    .progress{color:var(--muted);font-weight:700}.question{font-size:clamp(2.4rem,8vw,5rem);font-weight:850;margin:22px 0 18px;letter-spacing:.02em}
+    .timer{font-weight:800;color:var(--warn);min-height:1.5em}.answerinput{max-width:320px;margin:0 auto;font-size:2rem;text-align:center;font-weight:800}
+    .keypad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:350px;margin:16px auto 0}.keypad button{min-height:58px;border-radius:14px;border:1px solid var(--border);background:white;font-size:1.4rem;font-weight:800}.keypad .enter{grid-column:1/-1;background:var(--accent);color:#fff;border:0}
+    .feedback{min-height:1.6em;font-weight:800;margin-top:12px}.feedback.good{color:var(--good)}.feedback.bad{color:var(--bad)}
+    .resultbig{text-align:center;font-size:3rem;font-weight:900;margin:10px 0}.resultmeta{text-align:center;color:var(--muted)}
+    .resultlist{margin:18px 0 0;padding:0;list-style:none}.resultlist li{padding:9px 0;border-bottom:1px solid var(--border)}
+    .statgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.stat{background:var(--soft);border-radius:14px;padding:14px;text-align:center}.stat b{display:block;font-size:1.45rem}.stat span{color:var(--muted);font-size:.86rem}
+    .notice{background:#fff8e7;border:1px solid #ead59d;padding:12px 14px;border-radius:12px;color:#6d541e}
+    .speakbox{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;margin:20px 0}.speakbox .btn{font-size:1.05rem}
+    .small{font-size:.9rem;color:var(--muted)}
+    .parentlink{position:static;border:1px solid var(--border);background:white;border-radius:999px;padding:9px 13px;font-weight:700;white-space:nowrap}
+    .modal{position:fixed;inset:0;background:rgba(20,30,40,.38);display:none;align-items:center;justify-content:center;padding:20px}.modal.open{display:flex}.modalcard{max-width:520px;width:100%;background:white;border-radius:18px;padding:20px;border:1px solid var(--border)}
+    .sectionTitle{font-weight:850;margin:18px 0 10px}
+    .switchrow{display:flex;align-items:center;justify-content:space-between;gap:12px;border:1px solid var(--border);border-radius:12px;padding:12px 14px;margin-bottom:10px}.switchrow input{width:22px;height:22px}
+    @media (max-width:700px){.grid,.grid3{grid-template-columns:1fr}.statgrid{grid-template-columns:1fr}.app{padding:14px}.topbar{align-items:flex-start;flex-direction:column}.topbar-right{width:100%;justify-content:space-between}.wide{grid-column:auto}.spell-keyboard{grid-template-columns:repeat(7,minmax(0,1fr))}.column-grid{grid-template-columns:26px repeat(var(--cols),minmax(34px,48px));gap:4px}.column-grid .digit{font-size:1.7rem}}
+    @media print{.parentlink,.topbar,.btnrow,.back,.keypad,.answerinput,.modal{display:none!important}.page{display:none!important}#progressPage.page.active{display:block!important}body{background:#fff}.app{max-width:none;padding:0}.card{border:0}}
+  </style>
+</head>
+<body>
+<div class="app" id="app">
+  <div class="topbar"><div class="brand">Dakota Learning <span class="version">v0.1.3</span></div><div class="topbar-right"><div class="date" id="todayDate"></div><button class="parentlink" id="parentBtn">Parent</button></div></div>
+
+  <section id="homePage" class="page active">
+    <div class="hero">
+      <h1>Hi Dakota! ⭐</h1>
+      <p id="homeDate"></p>
+      <div class="starsline" id="homeStars">0 stars</div>
+      <p>What would you like to do today?</p>
+    </div>
+    <div class="grid">
+      <button class="action" data-go="mathsPage"><span class="icon">➗</span><strong>Maths</strong><span>Times tables, division, addition and subtraction</span></button>
+      <button class="action" data-go="spellingPage"><span class="icon">🔤</span><strong>Spelling</strong><span>Hear & spell, school words and stretch words</span></button>
+      <button class="action wide" data-go="progressPage"><span class="icon">⭐</span><strong>My Progress</strong><span>Stars, recent results and achievements</span></button>
+    </div>
+  </section>
+
+  <section id="mathsPage" class="page">
+    <button class="back" data-go="homePage">← Home</button>
+    <h2>Maths</h2><p class="sub">Choose what you'd like to practise.</p>
+    <div class="grid">
+      <button class="action" data-go="ttPracticeSetup"><span class="icon">✖</span><strong>Times Tables</strong><span>Traditional practice, one table or mixed</span></button>
+      <button class="action" data-go="divisionSetup"><span class="icon">➗</span><strong>Division</strong><span>Traditional division facts</span></button>
+      <button class="action" data-go="additionSetup"><span class="icon">➕</span><strong>Addition</strong><span>Column-style questions and larger numbers</span></button>
+      <button class="action" data-go="subtractionSetup"><span class="icon">➖</span><strong>Subtraction</strong><span>Column-style questions and differences</span></button>
+      <button class="action wide" data-go="mtcSetup"><span class="icon">⚡</span><strong>Times Tables Check</strong><span>25-question MTC-style practice with adjustable timing</span></button>
+    </div>
+  </section>
+
+  <section id="spellingPage" class="page">
+    <button class="back" data-go="homePage">← Home</button>
+    <h2>Spelling</h2><p class="sub">Traditional spelling practice with audio.</p>
+    <div class="grid">
+      <button class="action" data-spell-list="year4"><span class="icon">📘</span><strong>Years 3 &amp; 4 Statutory</strong><span>Official National Curriculum word list</span></button>
+      <button class="action" data-spell-list="year5"><span class="icon">🚀</span><strong>Years 5 &amp; 6 Statutory</strong><span>Official National Curriculum word list • stretch practice</span></button>
+      <button class="action" data-spell-list="school"><span class="icon">🏫</span><strong>School Words</strong><span>Use this week's spelling list</span></button>
+      <button class="action" data-spell-list="tricky"><span class="icon">🔁</span><strong>Tricky Words</strong><span>Words previously missed in this app</span></button>
+    </div>
+  </section>
+
+  <section id="ttPracticeSetup" class="page">
+    <button class="back" data-go="mathsPage">← Maths</button><h2>Times Tables Practice</h2>
+    <div class="card">
+      <div class="field"><label for="ttTable">Choose a table</label><select id="ttTable"><option value="mixed">Mixed 3–12</option></select></div>
+      <div class="field"><label for="ttCount">Questions</label><select id="ttCount"><option>10</option><option>15</option><option>20</option><option>25</option></select></div>
+      <div class="btnrow"><button class="btn" id="startTTPractice">Start practice</button></div>
+    </div>
+  </section>
+
+  <section id="divisionSetup" class="page">
+    <button class="back" data-go="mathsPage">← Maths</button><h2>Division Practice</h2>
+    <div class="card">
+      <div class="field"><label for="divTable">Choose a divisor</label><select id="divTable"><option value="mixed">Mixed 3–12</option></select></div>
+      <div class="field"><label for="divCount">Questions</label><select id="divCount"><option>10</option><option>15</option><option>20</option></select></div>
+      <div class="btnrow"><button class="btn" id="startDivision">Start practice</button></div>
+    </div>
+  </section>
+
+  <section id="additionSetup" class="page">
+    <button class="back" data-go="mathsPage">← Maths</button><h2>Addition Practice</h2>
+    <div class="card">
+      <div class="field"><label for="addLevel">Number size</label><select id="addLevel"><option value="hundreds">Hundreds</option><option value="thousands">Thousands</option><option value="tenthousands">Tens of thousands</option><option value="mixed">Mixed</option></select></div>
+      <div class="field"><label for="addCount">Questions</label><select id="addCount"><option>8</option><option>10</option><option>12</option></select></div>
+      <div class="btnrow"><button class="btn" id="startAddition">Start practice</button></div>
+    </div>
+  </section>
+
+  <section id="subtractionSetup" class="page">
+    <button class="back" data-go="mathsPage">← Maths</button><h2>Subtraction Practice</h2>
+    <div class="card">
+      <div class="field"><label for="subLevel">Number size</label><select id="subLevel"><option value="hundreds">Hundreds</option><option value="thousands">Thousands</option><option value="tenthousands">Tens of thousands</option><option value="mixed">Mixed</option></select></div>
+      <div class="field"><label for="subCount">Questions</label><select id="subCount"><option>8</option><option>10</option><option>12</option></select></div>
+      <div class="btnrow"><button class="btn" id="startSubtraction">Start practice</button></div>
+    </div>
+  </section>
+
+  <section id="mtcSetup" class="page">
+    <button class="back" data-go="mathsPage">← Maths</button><h2>Times Tables Check</h2>
+    <div class="card">
+      <div class="switchrow"><div><strong>Show timer</strong><div class="small">See how long each question is taking</div></div><input type="checkbox" id="showTimer" checked></div>
+      <div class="switchrow"><div><strong>Use time-out</strong><div class="small">Move on automatically when time runs out</div></div><input type="checkbox" id="useTimeout"></div>
+      <div class="field"><label for="secondsPerQuestion">Seconds per question</label><input id="secondsPerQuestion" type="number" min="2" max="30" step="1" value="6"></div>
+      <div class="notice">Start without a timeout if you want. Later you can try 10 seconds, then 8, 7 and finally 6.</div>
+      <div class="btnrow"><button class="btn" id="startMTC">Start</button></div>
+    </div>
+  </section>
+
+  <section id="quizPage" class="page">
+    <button class="back" id="quizBack">← Stop</button>
+    <div class="questionwrap card">
+      <div class="progress" id="quizProgress"></div>
+      <div class="timer" id="quizTimer"></div>
+      <div class="question" id="quizQuestion"></div>
+      <input class="answerinput" id="quizAnswer" type="text" inputmode="numeric" autocomplete="off" aria-label="Answer" />
+      <div class="keypad" id="keypad"></div>
+      <div class="feedback" id="quizFeedback"></div>
+    </div>
+  </section>
+
+  <section id="spellingQuizPage" class="page">
+    <button class="back" data-go="spellingPage">← Spelling</button>
+    <div class="questionwrap card">
+      <div class="progress" id="spellProgress"></div>
+      <div class="speakbox"><button class="btn" id="hearWord">🔊 Hear word</button><button class="btn secondary" id="hearSentence">🔊 Hear sentence</button></div>
+      <div class="small">The spelling is hidden. Listen, then use the letter buttons below. Predictive text is disabled.</div>
+      <div style="height:18px"></div>
+      <input class="answerinput" id="spellAnswer" type="text" readonly inputmode="none" autocomplete="off" autocapitalize="none" spellcheck="false" aria-label="Your spelling" />
+      <div class="spell-keyboard" id="spellKeyboard" aria-label="Spelling keyboard"></div>
+      <div class="btnrow"><button class="btn" id="checkSpelling">Check</button></div>
+      <div class="feedback" id="spellFeedback"></div>
+    </div>
+  </section>
+
+  <section id="resultsPage" class="page">
+    <div class="card">
+      <h2 style="text-align:center">Great work, Dakota! ⭐</h2>
+      <div class="resultbig" id="resultScore"></div>
+      <div class="resultmeta" id="resultMeta"></div>
+      <div class="statgrid" id="resultStats"></div>
+      <ul class="resultlist" id="resultList"></ul>
+      <div class="btnrow"><button class="btn" id="repeatActivity">Try again</button><button class="btn secondary" data-go="homePage">Home</button></div>
+    </div>
+  </section>
+
+  <section id="progressPage" class="page">
+    <button class="back" data-go="homePage">← Home</button><h2>My Progress</h2>
+    <div class="statgrid" style="margin-bottom:16px">
+      <div class="stat"><b id="progressStars">0</b><span>Stars</span></div>
+      <div class="stat"><b id="progressSessions">0</b><span>Activities</span></div>
+      <div class="stat"><b id="progressStreak">0</b><span>Day streak</span></div>
+    </div>
+    <div class="card"><div class="sectionTitle">Recent results</div><ul class="resultlist" id="recentResults"></ul></div>
+    <div class="btnrow"><button class="btn secondary" id="printProgress">Print</button></div>
+  </section>
+</div>
+
+<div class="modal" id="parentModal" aria-hidden="true"><div class="modalcard">
+  <div id="parentLogin">
+    <h2>Parent area</h2><p class="small">Prototype PIN: <strong>1234</strong>. You can change it after signing in.</p>
+    <div class="field"><label for="parentPinInput">PIN</label><input type="password" inputmode="numeric" id="parentPinInput"></div>
+    <div class="btnrow"><button class="btn" id="parentLoginBtn">Open</button><button class="btn secondary" id="parentCancelBtn">Cancel</button></div>
+    <div class="feedback bad" id="parentLoginFeedback"></div>
+  </div>
+  <div id="parentPanel" style="display:none">
+    <h2>Parent area</h2>
+    <div class="field"><label for="schoolWords">School spelling words</label><textarea id="schoolWords" placeholder="One word per line or separated by commas"></textarea></div>
+    <div class="field"><label for="newPin">Change parent PIN</label><input type="password" inputmode="numeric" id="newPin" placeholder="Leave blank to keep current PIN"></div>
+    <div class="btnrow"><button class="btn" id="saveParentSettings">Save settings</button></div>
+    <div class="sectionTitle">Backup & results</div>
+    <div class="btnrow"><button class="btn secondary" id="exportJson">Export backup</button><button class="btn secondary" id="exportCsv">Export CSV</button><button class="btn secondary" id="importJsonBtn">Import backup</button></div>
+    <input type="file" id="importJsonFile" accept="application/json,.json" style="display:none">
+    <div class="sectionTitle">Danger zone</div>
+    <button class="btn bad" id="clearHistory">Clear results and stars</button>
+    <div class="btnrow"><button class="btn secondary" id="closeParentPanel">Close</button></div>
+  </div>
+</div></div>
+
+<script>
+(() => {
+  const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+  const STORE_KEY='dakotaLearning_v01';
+  const defaultState={stars:0,results:[],schoolWords:['because','different','favourite','February','separate','surprise'],trickyWords:[],parentPin:'1234'};
+  let state=loadState();
+  let current={type:null,label:null,questions:[],index:0,correct:0,details:[],startedAt:0,qStart:0,totalAnswerMs:0,timerId:null,settings:{},lastSetup:null};
+  let spellSession={listKey:null,words:[],index:0,correct:0,details:[],startedAt:0};
+
+  const year4Words=[
+    ['accident','I had an accident on the playground.'],['actual','What is the actual answer?'],['address','Write your address carefully.'],['answer','Please answer the question.'],['appear','A rainbow may appear after rain.'],['arrive','We will arrive before lunch.'],['believe','I believe you can do it.'],['bicycle','She rode her bicycle to the park.'],['calendar','Mark the date on the calendar.'],['caught','I caught the ball.'],['centre','Meet me in the centre of the hall.'],['century','A century is one hundred years.'],['certain','I am certain of the answer.'],['circle','Draw a circle around the word.'],['complete','Please complete the task.'],['consider','Consider both choices.'],['continue','Continue reading the story.'],['decide','You must decide which one to choose.'],['describe','Describe what you can see.'],['different','These two shapes are different.'],['difficult','That was a difficult question.'],['early','We arrived early.'],['earth','The Earth moves around the Sun.'],['eight','There are eight pencils.'],['enough','We have enough chairs.'],['exercise','Exercise helps keep us healthy.'],['experience','It was a new experience.'],['experiment','We did a science experiment.'],['extreme','The weather was extreme.'],['famous','The castle is famous.'],['favourite','Blue is my favourite colour.'],['February','February is a winter month.'],['forward','Take one step forward.'],['fruit','I ate some fruit.'],['grammar','We practised grammar today.'],['group','Work with your group.'],['guard','The guard stood by the gate.'],['guide','Use the guide to help you.'],['heard','I heard a loud noise.'],['heart','Your heart pumps blood.'],['height','Measure the height of the plant.'],['history','We learned about history.'],['imagine','Imagine living on the Moon.'],['important','This is an important message.'],['interest','She has an interest in animals.'],['island','They visited a small island.'],['knowledge','Reading helps build knowledge.'],['learn','We learn something new each day.'],['length','Measure the length of the table.'],['library','We borrowed a book from the library.'],['material','This material is waterproof.'],['medicine','The doctor gave her medicine.'],['mention','Do not forget to mention the date.'],['minute','Wait one minute.'],['natural','This juice has a natural flavour.'],['notice','Did you notice the change?'],['occasion','It was a special occasion.'],['often','We often walk to school.'],['opposite','Stand on the opposite side.'],['ordinary','It looked like an ordinary box.'],['particular','Choose one particular example.'],['peculiar','That is a peculiar sound.'],['perhaps','Perhaps it will rain later.'],['popular','Football is a popular sport.'],['position','Change the position of the chair.'],['possible','Is it possible to finish today?'],['potatoes','We cooked potatoes for dinner.'],['pressure','Do not put too much pressure on it.'],['probably','It will probably be sunny.'],['promise','I promise to help.'],['purpose','What is the purpose of this tool?'],['quarter','A quarter of twelve is three.'],['question','Read the question carefully.'],['recent','This is a recent photograph.'],['regular','We have a regular routine.'],['reign','The king began his reign.'],['remember','Remember to bring your book.'],['sentence','Write a complete sentence.'],['separate','Keep the two piles separate.'],['special','Today is a special day.'],['straight','Draw a straight line.'],['strange','That was a strange noise.'],['strength','Swimming builds strength.'],['suppose','I suppose we could try again.'],['surprise','The party was a surprise.'],['therefore','It was raining; therefore, we stayed inside.'],['though','Though it was cold, we went outside.'],['thought','I thought about the answer.'],['through','We walked through the tunnel.'],['various','We tried various methods.'],['weight','Check the weight of the parcel.'],['woman','The woman carried a bag.'],['women','The women worked together.'],['accidentally','I accidentally dropped my pencil.'],['actually','It was actually easier than I expected.'],['breath','Take a deep breath before you begin.'],['breathe','Remember to breathe slowly and calmly.'],['build','We will build a model bridge.'],['busy','The classroom was busy this morning.'],['business','The shop is a family business.'],['disappear','The clouds began to disappear.'],['eighth','She finished in eighth place.'],['forwards','Take two steps forwards.'],['increase','We need to increase the total by ten.'],['naughty','The naughty puppy chewed a slipper.'],['occasionally','We occasionally visit the museum.'],['possess','Some animals possess excellent eyesight.'],['possession','The medal was her favourite possession.'],['although','Although it rained, we still went outside.']
+  ];
+  const year5Words=[
+    ['accommodate','The hotel can accommodate many guests.'],['accompany','An adult will accompany the class.'],['according','According to the map, we are close.'],['achieve','Work hard to achieve your goal.'],['ancient','We studied an ancient civilisation.'],['apparent','It became apparent that the answer was wrong.'],['appreciate','I appreciate your help.'],['attached','The label is attached to the box.'],['available','The book is available in the library.'],['average','Find the average of these numbers.'],['awkward','The box was awkward to carry.'],['bargain','That was a good bargain.'],['bruise','I had a bruise on my knee.'],['category','Put each word into a category.'],['cemetery','The old cemetery was quiet.'],['committee','The committee met on Tuesday.'],['communicate','We communicate in many ways.'],['community','Our school is part of the community.'],['competition','She entered a spelling competition.'],['conscience','His conscience told him to be honest.'],['conscious','She was conscious of the time.'],['convenience','Online shopping can be a convenience.'],['correspond','The colours correspond to the labels.'],['criticise','Try not to criticise without explaining why.'],['curiosity','Her curiosity led her to investigate.'],['definite','We need a definite answer.'],['desperate','They were desperate to find the lost dog.'],['determined','She was determined to improve.'],['develop','Plants develop from seeds.'],['dictionary','Check the word in a dictionary.'],['disastrous','The flood had disastrous effects.'],['embarrass','Do not embarrass someone on purpose.'],['environment','We should look after the environment.'],['equipment','The sports equipment is in the cupboard.'],['especially','I especially like this chapter.'],['exaggerate','Do not exaggerate the story.'],['excellent','That was an excellent answer.'],['existence','Scientists study the existence of life.'],['explanation','Give an explanation for your choice.'],['familiar','The place looked familiar.'],['foreign','She is learning a foreign language.'],['forty','There are forty children.'],['frequently','We frequently use this method.'],['government','The government makes national decisions.'],['guarantee','The shop gave a guarantee.'],['harass','It is wrong to harass another person.'],['hindrance','The heavy rain was a hindrance.'],['identity','The badge showed her identity.'],['immediate','We need an immediate response.'],['immediately','Come here immediately.'],['individual','Each individual made a choice.'],['interfere','Do not interfere with the experiment.'],['interrupt','Please do not interrupt while someone is speaking.'],['language','English is a language.'],['leisure','Reading can be a leisure activity.'],['lightning','Lightning flashed in the sky.'],['marvellous','We had a marvellous day.'],['mischievous','The mischievous puppy stole a sock.'],['muscle','Exercise strengthens a muscle.'],['necessary','It is necessary to read the instructions.'],['neighbour','Our neighbour has a new dog.'],['nuisance','The dripping tap was a nuisance.'],['occupy','Books occupy most of the shelf.'],['occur','Mistakes can occur.'],['opportunity','This is a good opportunity to learn.'],['parliament','Parliament debates new laws.'],['persuade','She tried to persuade me to join in.'],['physical','Running is a physical activity.'],['prejudice','Prejudice can be unfair and harmful.'],['privilege','It is a privilege to represent the school.'],['profession','Teaching is a profession.'],['programme','We watched a science programme.'],['pronunciation','Check the pronunciation of the word.'],['queue','We waited in a queue.'],['recognise','Can you recognise this shape?'],['recommend','I recommend this book.'],['relevant','Choose information that is relevant.'],['restaurant','We ate at a restaurant.'],['rhyme','Cat and hat rhyme.'],['rhythm','Clap the rhythm of the song.'],['sacrifice','Sometimes we sacrifice one thing for another.'],['secretary','The secretary answered the phone.'],['shoulder','My shoulder was sore.'],['signature','Write your signature at the bottom.'],['sincere','Her apology was sincere.'],['soldier','The soldier carried a heavy pack.'],['stomach','My stomach was rumbling.'],['sufficient','We have sufficient time.'],['suggest','Can you suggest another idea?'],['symbol','A heart can be a symbol of love.'],['system','The school uses a new system.'],['temperature','The temperature dropped overnight.'],['thorough','She did a thorough check.'],['twelfth','December is the twelfth month.'],['variety','The shop sells a variety of fruit.'],['vegetable','A carrot is a vegetable.'],['vehicle','A bus is a large vehicle.'],['yacht','The yacht sailed across the bay.'],['aggressive','The aggressive dog barked loudly.'],['amateur','The amateur photographer took a lovely picture.'],['controversy','The decision caused some controversy.'],['equip','We need to equip the team properly.'],['equipped','The classroom is equipped with new computers.'],['sincerely','She sincerely thanked everyone for helping.']
+  ];
+
+  function loadState(){try{return {...defaultState,...JSON.parse(localStorage.getItem(STORE_KEY)||'{}')}}catch(e){return {...defaultState}}}
+  function saveState(){localStorage.setItem(STORE_KEY,JSON.stringify(state));refreshHome();}
+  function fmtDate(d=new Date()){return new Intl.DateTimeFormat('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'}).format(d)}
+  function isoDay(d=new Date()){return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-')}
+  function shuffle(a){a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+  function pick(a){return a[Math.floor(Math.random()*a.length)]}
+  function showPage(id){$$('.page').forEach(p=>p.classList.remove('active'));$('#'+id).classList.add('active');window.scrollTo(0,0);if(id==='progressPage')renderProgress();}
+  function refreshHome(){const date=fmtDate();$('#todayDate').textContent=date;$('#homeDate').textContent=date;$('#homeStars').textContent=`${state.stars} star${state.stars===1?'':'s'}`;}
+  refreshHome();
+
+  $$('[data-go]').forEach(b=>b.addEventListener('click',()=>showPage(b.dataset.go)));
+  for(let n=3;n<=12;n++){const o=document.createElement('option');o.value=n;o.textContent=`${n} × table`;$('#ttTable').appendChild(o.cloneNode(true));const d=document.createElement('option');d.value=n;d.textContent=`÷ ${n}`;$('#divTable').appendChild(d)}
+
+  let numericTarget=null;
+  function createKeypad(){const kp=$('#keypad');kp.innerHTML='';['1','2','3','4','5','6','7','8','9','⌫','0'].forEach(k=>{const b=document.createElement('button');b.type='button';b.textContent=k;b.addEventListener('click',()=>{const target=numericTarget&&document.body.contains(numericTarget)?numericTarget:$('#quizAnswer');if(k==='⌫')target.value=target.value.slice(0,-1);else target.value+=k;target.focus();});kp.appendChild(b)});const enter=document.createElement('button');enter.type='button';enter.textContent='Enter';enter.className='enter';enter.addEventListener('click',()=>{if(numericTarget&&numericTarget!==$('#quizAnswer')){$('#quizAnswer').focus();numericTarget=$('#quizAnswer');}else submitQuizAnswer();});kp.appendChild(enter)}
+  createKeypad();
+  $('#quizAnswer').addEventListener('focus',()=>numericTarget=$('#quizAnswer'));
+
+  function createSpellKeyboard(){const kp=$('#spellKeyboard');kp.innerHTML='';const keys='QWERTYUIOPASDFGHJKLZXCVBNM'.split('');keys.forEach(k=>{const b=document.createElement('button');b.type='button';b.textContent=k;b.setAttribute('aria-label',`Letter ${k}`);b.addEventListener('click',()=>{$('#spellAnswer').value+=k.toLowerCase();});kp.appendChild(b)});[["'","Apostrophe"],["-","Hyphen"],["⌫","Backspace"],["Clear","Clear word"]].forEach(([k,label])=>{const b=document.createElement('button');b.type='button';b.textContent=k;b.className='control';b.setAttribute('aria-label',label);b.addEventListener('click',()=>{if(k==='⌫')$('#spellAnswer').value=$('#spellAnswer').value.slice(0,-1);else if(k==='Clear')$('#spellAnswer').value='';else $('#spellAnswer').value+=k;});kp.appendChild(b)});}
+  createSpellKeyboard();
+
+  function startQuiz(label,type,questions,settings={},lastSetup=null){clearInterval(current.timerId);current={type,label,questions,index:0,correct:0,details:[],startedAt:Date.now(),qStart:0,totalAnswerMs:0,timerId:null,settings,lastSetup};$('#quizFeedback').textContent='';$('#quizAnswer').value='';showPage('quizPage');renderQuizQuestion();}
+  function renderColumnQuestion(q){const cols=Math.max(String(q.a).length,String(q.b).length,String(q.answer).length);const digits=n=>String(n).padStart(cols,' ').split('').map(d=>`<div class="digit">${d===' '?'&nbsp;':d}</div>`).join('');const work=Array.from({length:cols},(_,i)=>`<input class="workbox" type="text" readonly inputmode="none" maxlength="2" aria-label="Working box ${i+1}" />`).join('');const rules=Array.from({length:cols},()=>'<div class="rulecell"></div>').join('');const label=q.symbol==='+'?'Carry / working':'Exchange / working';return `<div class="columnworkwrap"><div class="columnworklabel">${label}</div><div class="column-grid" style="--cols:${cols}"><div></div>${work}<div></div>${digits(q.a)}<div class="op">${q.symbol}</div>${digits(q.b)}<div></div>${rules}</div><div class="column-answer-note">Tap a working box and use the number pad for carrying or exchanging. Then enter the final answer below.</div></div>`;}
+  function renderQuizQuestion(){clearInterval(current.timerId);if(current.index>=current.questions.length)return finishQuiz();const q=current.questions[current.index];const isPractice=q.phase==='practice';if(isPractice){$('#quizProgress').textContent=`Practice ${current.index+1} of 3`;}else if(current.type==='mtc'){$('#quizProgress').textContent=`Question ${current.index-2} of 25`;}else{$('#quizProgress').textContent=`Question ${current.index+1} of ${current.questions.length}`;}if(q.kind==='column'){$('#quizQuestion').innerHTML=renderColumnQuestion(q);$$('#quizQuestion .workbox').forEach(box=>box.addEventListener('focus',()=>numericTarget=box));}else{$('#quizQuestion').textContent=q.prompt;}$('#quizAnswer').value='';$('#quizFeedback').textContent='';numericTarget=$('#quizAnswer');current.qStart=Date.now();$('#quizAnswer').focus();if(!isPractice&&(current.settings.showTimer||current.settings.useTimeout)){let remain=current.settings.seconds||6;updateTimer(remain);current.timerId=setInterval(()=>{const elapsed=(Date.now()-current.qStart)/1000;remain=(current.settings.seconds||6)-elapsed;updateTimer(remain);if(current.settings.useTimeout&&remain<=0){clearInterval(current.timerId);recordQuizAnswer('',true);}},100)}else{$('#quizTimer').textContent=isPractice?'Practice question - no timer':'';}}
+  function updateTimer(remain){if(!current.settings.showTimer){$('#quizTimer').textContent='';return;}if(current.settings.useTimeout)$('#quizTimer').textContent=`${Math.max(0,remain).toFixed(1)}s`;else $('#quizTimer').textContent=`${((Date.now()-current.qStart)/1000).toFixed(1)}s`;}
+  function submitQuizAnswer(){if(current.index>=current.questions.length)return;const v=$('#quizAnswer').value.trim();if(v==='')return;recordQuizAnswer(v,false)}
+  function recordQuizAnswer(v,timedOut){clearInterval(current.timerId);const q=current.questions[current.index];const elapsed=Date.now()-current.qStart;current.totalAnswerMs+=elapsed;const got=Number(v);const ok=!timedOut&&got===q.answer;if(ok)current.correct++;const working=q.kind==='column'?$$('#quizQuestion .workbox').map(box=>box.value.trim()):[];current.details.push({prompt:q.prompt,answer:q.answer,given:timedOut?'Time out':v,correct:ok,ms:elapsed,timedOut,working});current.index++;setTimeout(renderQuizQuestion, current.settings.pauseMs??350);}
+  $('#quizAnswer').addEventListener('keydown',e=>{if(e.key==='Enter')submitQuizAnswer()});
+  $('#quizBack').addEventListener('click',()=>{clearInterval(current.timerId);showPage('mathsPage')});
+
+  function makeTimesQuestions(table,count){const qs=[];const harder=[6,7,8,9,12];for(let i=0;i<count;i++){let a=table==='mixed'?(Math.random()<.6?pick(harder):3+Math.floor(Math.random()*10)):Number(table);let b=2+Math.floor(Math.random()*11);if(Math.random()<.45)[a,b]=[b,a];qs.push({prompt:`${a} × ${b}`,answer:a*b})}return qs}
+  function makeDivisionQuestions(table,count){const qs=[];for(let i=0;i<count;i++){const divisor=table==='mixed'?3+Math.floor(Math.random()*10):Number(table);const ans=2+Math.floor(Math.random()*11);qs.push({prompt:`${divisor*ans} ÷ ${divisor}`,answer:ans})}return qs}
+  function numRange(level){if(level==='hundreds')return [100,999];if(level==='thousands')return [1000,9999];if(level==='tenthousands')return [10000,49999];return pick([[100,999],[1000,9999],[10000,49999]])}
+  function makeAddSubQuestions(op,level,count){const qs=[];for(let i=0;i<count;i++){const [lo,hi]=numRange(level);let a=lo+Math.floor(Math.random()*(hi-lo+1));let b=lo+Math.floor(Math.random()*(hi-lo+1));if(op==='sub'&&b>a)[a,b]=[b,a];qs.push({kind:'column',a,b,symbol:op==='add'?'+':'−',prompt:`${a.toLocaleString('en-GB')} ${op==='add'?'+':'−'} ${b.toLocaleString('en-GB')}`,answer:op==='add'?a+b:a-b})}return qs}
+
+  $('#startTTPractice').addEventListener('click',()=>{const t=$('#ttTable').value,c=Number($('#ttCount').value);const setup=()=>startQuiz(`Times Tables ${t==='mixed'?'Mixed':t+'×'}`,'times',makeTimesQuestions(t,c),{},setup);setup()});
+  $('#startDivision').addEventListener('click',()=>{const t=$('#divTable').value,c=Number($('#divCount').value);const setup=()=>startQuiz(`Division ${t==='mixed'?'Mixed':'÷'+t}`,'division',makeDivisionQuestions(t,c),{},setup);setup()});
+  $('#startAddition').addEventListener('click',()=>{const l=$('#addLevel').value,c=Number($('#addCount').value);const setup=()=>startQuiz(`Addition ${l}`,'addition',makeAddSubQuestions('add',l,c),{},setup);setup()});
+  $('#startSubtraction').addEventListener('click',()=>{const l=$('#subLevel').value,c=Number($('#subCount').value);const setup=()=>startQuiz(`Subtraction ${l}`,'subtraction',makeAddSubQuestions('sub',l,c),{},setup);setup()});
+
+  $('#startMTC').addEventListener('click',()=>{
+    const seconds=Math.max(2,Math.min(30,Number($('#secondsPerQuestion').value)||6));
+    const showTimer=$('#showTimer').checked,useTimeout=$('#useTimeout').checked;
+    const practice=shuffle([{prompt:'2 × 5',answer:10,phase:'practice'},{prompt:'4 × 3',answer:12,phase:'practice'},{prompt:'10 × 6',answer:60,phase:'practice'}]);
+    const test=makeTimesQuestions('mixed',25).map(q=>({...q,phase:'test'}));const all=[...practice,...test];
+    const setup=()=>startQuiz('Times Tables Check','mtc',all,{showTimer,useTimeout,seconds,pauseMs:useTimeout?300:250},setup);
+    setup();
+  });
+
+  function finishQuiz(){clearInterval(current.timerId);const isMtc=current.type==='mtc';const scoringDetails=isMtc?current.details.slice(3):current.details;const total=isMtc?25:current.questions.length;const correct=scoringDetails.filter(d=>d.correct).length;const avg=scoringDetails.length?Math.round(scoringDetails.reduce((s,d)=>s+d.ms,0)/scoringDetails.length):0;const timeouts=scoringDetails.filter(d=>d.timedOut).length;const stars=awardStars(correct,total);const result={date:new Date().toISOString(),day:isoDay(),subject:'Maths',activity:current.label,correct,total,percent:Math.round(correct/total*100),avgMs:avg,totalMs:scoringDetails.reduce((s,d)=>s+d.ms,0),details:scoringDetails,stars};state.results.unshift(result);state.stars+=stars;saveState();renderResults(result,current.lastSetup);}
+  function awardStars(correct,total){const pct=correct/total;return pct===1?4:pct>=.8?3:pct>=.6?2:1}
+  function renderResults(r,repeatFn){$('#resultScore').textContent=`${r.correct} / ${r.total}`;$('#resultMeta').textContent=`${r.activity} • +${r.stars} star${r.stars===1?'':'s'}`;$('#resultStats').innerHTML=`<div class="stat"><b>${r.percent}%</b><span>Correct</span></div><div class="stat"><b>${(r.totalMs/1000).toFixed(1)}s</b><span>Answering time</span></div><div class="stat"><b>${(r.avgMs/1000).toFixed(1)}s</b><span>Average</span></div>`;const wrong=r.details.filter(d=>!d.correct);$('#resultList').innerHTML=wrong.length?`<li><strong>Practise again</strong></li>`+wrong.slice(0,12).map(d=>`<li>${escapeHtml(d.prompt)} = ${escapeHtml(String(d.answer))} <span class="small">(you: ${escapeHtml(String(d.given))})</span></li>`).join(''):`<li>Perfect round! ⭐</li>`;$('#repeatActivity').onclick=repeatFn||(()=>showPage('homePage'));showPage('resultsPage')}
+
+  $$('[data-spell-list]').forEach(b=>b.addEventListener('click',()=>startSpelling(b.dataset.spellList)));
+  function getSpellList(key){if(key==='year4')return year4Words;if(key==='year5')return year5Words;if(key==='school')return state.schoolWords.filter(Boolean).map(w=>[w,`Spell the word ${w}.`]);if(key==='tricky'){const set=[...new Set(state.trickyWords)];return set.map(w=>[w,`Spell the word ${w}.`]);}return []}
+  function startSpelling(key){let list=getSpellList(key);if(!list.length){alert(key==='school'?'Add school words in the Parent area first.':'No tricky words yet. Missed spellings will appear here.');return}const count=Math.min(10,list.length);spellSession={listKey:key,words:shuffle(list).slice(0,count),index:0,correct:0,details:[],startedAt:Date.now()};showPage('spellingQuizPage');renderSpelling();}
+  function renderSpelling(){if(spellSession.index>=spellSession.words.length)return finishSpelling();$('#spellProgress').textContent=`Word ${spellSession.index+1} of ${spellSession.words.length}`;$('#spellAnswer').value='';$('#spellFeedback').textContent='';setTimeout(speakWord,300);}
+  function speak(text){if(!('speechSynthesis' in window)){alert('Speech is not available in this browser.');return}speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.lang='en-GB';u.rate=.82;speechSynthesis.speak(u)}
+  function speakWord(){speak(spellSession.words[spellSession.index]?.[0]||'')}
+  $('#hearWord').addEventListener('click',speakWord);$('#hearSentence').addEventListener('click',()=>speak(spellSession.words[spellSession.index]?.[1]||''));
+  $('#checkSpelling').addEventListener('click',checkSpelling);
+  function normaliseWord(s){return s.trim().toLowerCase().replace(/[’']/g,"'")}
+  function checkSpelling(){const pair=spellSession.words[spellSession.index];const given=$('#spellAnswer').value; if(!given.trim())return;const ok=normaliseWord(given)===normaliseWord(pair[0]);if(ok){spellSession.correct++;$('#spellFeedback').className='feedback good';$('#spellFeedback').textContent='Correct ⭐'}else{$('#spellFeedback').className='feedback bad';$('#spellFeedback').textContent=`The spelling is: ${pair[0]}`;if(!state.trickyWords.includes(pair[0]))state.trickyWords.push(pair[0]);}
+    spellSession.details.push({prompt:'Spelling',word:pair[0],given,correct:ok});spellSession.index++;setTimeout(renderSpelling,ok?650:1400);
+  }
+  function finishSpelling(){const total=spellSession.words.length,correct=spellSession.correct,stars=awardStars(correct,total);const result={date:new Date().toISOString(),day:isoDay(),subject:'Spelling',activity:`Spelling: ${spellLabel(spellSession.listKey)}`,correct,total,percent:Math.round(correct/total*100),avgMs:0,totalMs:Date.now()-spellSession.startedAt,details:spellSession.details,stars};state.results.unshift(result);state.stars+=stars;saveState();renderSpellingResults(result)}
+  function spellLabel(k){return ({year4:'Years 3 & 4 Statutory',year5:'Years 5 & 6 Statutory',school:'School Words',tricky:'Tricky Words'})[k]||k}
+  function renderSpellingResults(r){$('#resultScore').textContent=`${r.correct} / ${r.total}`;$('#resultMeta').textContent=`${r.activity} • +${r.stars} star${r.stars===1?'':'s'}`;$('#resultStats').innerHTML=`<div class="stat"><b>${r.percent}%</b><span>Correct</span></div><div class="stat"><b>${Math.round(r.totalMs/1000)}s</b><span>Total time</span></div><div class="stat"><b>${r.total-r.correct}</b><span>To practise</span></div>`;const wrong=r.details.filter(d=>!d.correct);$('#resultList').innerHTML=wrong.length?`<li><strong>Practise again</strong></li>`+wrong.map(d=>`<li>${escapeHtml(d.word)} <span class="small">(you: ${escapeHtml(d.given)})</span></li>`).join(''):`<li>Perfect spelling round! ⭐</li>`;$('#repeatActivity').onclick=()=>startSpelling(spellSession.listKey);showPage('resultsPage')}
+
+  function streak(){const days=[...new Set(state.results.map(r=>r.day))].sort().reverse();if(!days.length)return 0;let s=0;let d=new Date();d.setHours(0,0,0,0);for(let i=0;i<days.length;i++){const target=new Date(days[i]+'T00:00:00');const diff=Math.round((d-target)/86400000);if(diff===0|| (s===0&&diff===1)){s++;d=target}else if(diff===1){s++;d=target}else break;}return s}
+  function renderProgress(){$('#progressStars').textContent=state.stars;$('#progressSessions').textContent=state.results.length;$('#progressStreak').textContent=streak();$('#recentResults').innerHTML=state.results.length?state.results.slice(0,12).map(r=>`<li><strong>${escapeHtml(r.activity)}</strong><br><span class="small">${new Intl.DateTimeFormat('en-GB',{day:'2-digit',month:'2-digit',year:'numeric'}).format(new Date(r.date))} • ${r.correct}/${r.total} • +${r.stars}⭐</span></li>`).join(''):'<li>No results yet. Your first activity will appear here.</li>'}
+  $('#printProgress').addEventListener('click',()=>window.print());
+
+  $('#parentBtn').addEventListener('click',()=>{$('#parentModal').classList.add('open');$('#parentLogin').style.display='block';$('#parentPanel').style.display='none';$('#parentPinInput').value='';$('#parentLoginFeedback').textContent='';});
+  $('#parentCancelBtn').addEventListener('click',closeParent);$('#closeParentPanel').addEventListener('click',closeParent);function closeParent(){$('#parentModal').classList.remove('open')}
+  $('#parentLoginBtn').addEventListener('click',()=>{if($('#parentPinInput').value===state.parentPin){$('#parentLogin').style.display='none';$('#parentPanel').style.display='block';$('#schoolWords').value=state.schoolWords.join('\n');$('#newPin').value='';}else $('#parentLoginFeedback').textContent='Incorrect PIN';});
+  $('#saveParentSettings').addEventListener('click',()=>{state.schoolWords=$('#schoolWords').value.split(/[\n,]+/).map(s=>s.trim().toLowerCase()).filter(Boolean);const np=$('#newPin').value.trim();if(np)state.parentPin=np;saveState();alert('Saved.');});
+  $('#clearHistory').addEventListener('click',()=>{if(confirm('Clear all saved results, stars and tricky words?')){state.results=[];state.stars=0;state.trickyWords=[];saveState();alert('Cleared.')}});
+  $('#exportJson').addEventListener('click',()=>downloadFile('Dakota_Learning_Backup.json',JSON.stringify(state,null,2),'application/json'));
+  $('#exportCsv').addEventListener('click',()=>{const rows=[['date','subject','activity','score','total','percent','stars']];state.results.forEach(r=>rows.push([r.date,r.subject,r.activity,r.correct,r.total,r.percent,r.stars]));downloadFile('Dakota_Learning_Results.csv',rows.map(row=>row.map(csvCell).join(',')).join('\n'),'text/csv')});
+  $('#importJsonBtn').addEventListener('click',()=>$('#importJsonFile').click());$('#importJsonFile').addEventListener('change',async e=>{const f=e.target.files[0];if(!f)return;try{const data=JSON.parse(await f.text());state={...defaultState,...data};saveState();$('#schoolWords').value=state.schoolWords.join('\n');alert('Backup imported.')}catch(err){alert('That backup file could not be read.')}});
+  function downloadFile(name,content,type){const blob=new Blob([content],{type});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000)}
+  function csvCell(v){v=String(v??'');return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v}
+  function escapeHtml(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+})();
+</script>
+</body>
+</html>
