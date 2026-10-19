@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Dakota Learning App v0.2.2</title>
+<title>Primary Learning App v0.2.2</title>
 <style>
 :root{
   --bg:#f6f8fb;--card:#fff;--text:#1f2937;--muted:#667085;--border:#d8e0ea;
@@ -222,7 +222,7 @@ hr{border:0;border-top:1px solid var(--border);margin:18px 0}
 <body>
 <div class="app" id="app">
   <header class="topbar">
-    <div class="brand">Dakota Learning App <span class="version">v0.2.2</span></div>
+    <div class="brand">Primary Learning App <span class="version">v0.2.2</span></div>
     <div class="topright"><div class="date" id="todayDate"></div><button class="parentbtn" id="parentBtn">Parent</button></div>
   </header>
 
@@ -479,7 +479,7 @@ const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
 const STORE_KEY='learningTime_v02';
 const clone=o=>JSON.parse(JSON.stringify(o));
-const OLD_KEY='dakotaLearning_v01';
+const OLD_KEY='primaryLearning_v01';
 
 const WORDS_YEAR2 = ["after", "again", "any", "bath", "beautiful", "because", "behind", "both", "break", "busy", "child", "children", "Christmas", "class", "climb", "clothes", "cold", "could", "door", "even", "every", "everybody", "eye", "fast", "father", "find", "floor", "gold", "grass", "great", "half", "hold", "hour", "improve", "kind", "last", "many", "mind", "money", "most", "move", "Mr", "Mrs", "old", "only", "parents", "pass", "past", "path", "people", "plant", "poor", "pretty", "prove", "should", "steak", "sugar", "sure", "told", "water", "who", "whole", "wild", "would"];
 const WORDS_YEAR34 = ["accident", "accidentally", "actual", "actually", "address", "answer", "appear", "arrive", "believe", "bicycle", "breath", "breathe", "build", "busy", "business", "calendar", "caught", "centre", "century", "certain", "circle", "complete", "consider", "continue", "decide", "describe", "different", "difficult", "disappear", "early", "earth", "eight", "eighth", "enough", "exercise", "experience", "experiment", "extreme", "famous", "favourite", "February", "forward", "forwards", "fruit", "grammar", "group", "guard", "guide", "heard", "heart", "height", "history", "imagine", "increase", "important", "interest", "island", "knowledge", "learn", "length", "library", "material", "medicine", "mention", "minute", "natural", "naughty", "notice", "occasion", "occasionally", "often", "opposite", "ordinary", "particular", "peculiar", "perhaps", "popular", "position", "possess", "possession", "possible", "potatoes", "pressure", "probably", "promise", "purpose", "quarter", "question", "recent", "regular", "reign", "remember", "sentence", "separate", "special", "straight", "strange", "strength", "suppose", "surprise", "therefore", "though", "although", "thought", "through", "various", "weight", "woman", "women"];
