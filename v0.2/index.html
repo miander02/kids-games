@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Dakota Learning App v0.2.2</title>
+<title>Learning Time v0.2</title>
 <style>
 :root{
   --bg:#f6f8fb;--card:#fff;--text:#1f2937;--muted:#667085;--border:#d8e0ea;
@@ -101,118 +101,6 @@ hr{border:0;border-top:1px solid var(--border);margin:18px 0}
   .keyrow{gap:4px}.keyrow button{width:9.2vw;max-width:48px;min-height:46px;font-size:.92rem}.keyrow .control{width:auto;max-width:none;padding:0 10px}
   .column-grid{grid-template-columns:28px repeat(var(--cols),minmax(38px,52px));gap:4px}.column-grid .digit{font-size:1.7rem}
 }
-
-/* v0.2.2: responsive column-maths workspace.
-   The calculation stays visible while help, keypad and rough work use the other pane. */
-.column-responsive{display:block}
-.column-problem-pane,.column-tools-pane{min-width:0}
-.column-instruction{text-align:center;margin-top:6px}
-.column-learn-row{justify-content:center;margin-top:8px}
-.column-tools-pane .learnbox{margin-top:0}
-
-/* Tablet layout in BOTH orientations. 600px is deliberately lower than the
-   old breakpoint because Android tablets can report a much smaller CSS width
-   than their physical pixel resolution. */
-@media (min-width:600px){
-  body:has(#columnMathPage.active) .app{max-width:1180px;padding:8px 12px}
-  body:has(#columnMathPage.active) .topbar{margin-bottom:4px;min-height:38px}
-  body:has(#columnMathPage.active) .topbar .date{display:none}
-  #columnMathPage .back{padding:3px 0 5px}
-  #columnMathPage .column-shell{
-    max-width:none;
-    height:calc(100dvh - 76px);
-    min-height:460px;
-    margin:0;
-    padding:10px 12px;
-    overflow:hidden;
-    display:flex;
-    flex-direction:column;
-  }
-  #columnMathPage .column-top{margin-bottom:4px;flex:0 0 auto}
-  #columnMathPage .column-responsive{
-    flex:1 1 auto;
-    min-height:0;
-    display:grid;
-    grid-template-columns:minmax(300px,1fr) minmax(270px,.92fr);
-    gap:12px;
-    align-items:stretch;
-  }
-  #columnMathPage .column-problem-pane{
-    min-height:0;
-    display:flex;
-    flex-direction:column;
-    justify-content:flex-start;
-    padding:4px 6px 2px;
-    border-right:1px solid var(--border);
-  }
-  #columnMathPage .column-tools-pane{
-    min-height:0;
-    overflow:auto;
-    overscroll-behavior:contain;
-    display:flex;
-    flex-direction:column;
-    gap:9px;
-    padding:2px 4px 4px 2px;
-  }
-  #columnMathPage .column-grid{padding:0;gap:4px;overflow:visible}
-  #columnMathPage .column-grid .place{font-size:.72rem}
-  #columnMathPage .column-grid .digit{font-size:1.65rem;min-height:36px}
-  #columnMathPage .column-grid .op{font-size:1.45rem}
-  #columnMathPage .column-grid .cell{min-height:36px;font-size:1.05rem}
-  #columnMathPage .column-grid .ans{min-height:42px;font-size:1.3rem}
-  #columnMathPage .column-instruction{font-size:.78rem;margin-top:3px}
-  #columnMathPage .feedback{margin-top:4px;min-height:1.25em}
-  #columnMathPage .column-learn-row{margin-top:4px}
-  #columnMathPage .column-learn-row .btn{min-height:38px;padding:7px 12px}
-  #columnMathPage .keypad{max-width:none;margin:0;gap:6px}
-  #columnMathPage .keypad button{min-height:40px;font-size:1.04rem;border-radius:10px}
-  #columnMathPage .learnbox.open{display:block;max-height:190px;overflow:auto;padding:10px;margin:0}
-  #columnMathPage .learnbox h3{font-size:1rem;margin-bottom:5px}
-  #columnMathPage .learnbox p{margin:4px 0;font-size:.86rem}
-  #columnMathPage .rough{margin-top:0}
-  #columnMathPage .roughhead{gap:6px}
-  #columnMathPage .roughhead .small{font-size:.76rem}
-  #columnMathPage .roughhead .btn{min-height:36px;padding:6px 10px}
-  #columnMathPage .roughcanvas{height:120px;margin-top:6px}
-}
-
-/* Short tablet screens get a still tighter workspace. */
-@media (min-width:600px) and (max-height:720px){
-  #columnMathPage .column-shell{height:calc(100dvh - 68px);padding:7px 10px;min-height:400px}
-  #columnMathPage .column-top{font-size:.9rem}
-  #columnMathPage .column-grid .digit{font-size:1.45rem;min-height:31px}
-  #columnMathPage .column-grid .cell{min-height:31px}
-  #columnMathPage .column-grid .ans{min-height:36px;font-size:1.15rem}
-  #columnMathPage .keypad button{min-height:35px}
-  #columnMathPage .roughcanvas{height:92px}
-  #columnMathPage .learnbox.open{max-height:135px}
-}
-
-/* Narrow phones remain stacked. The calculation sticks to the top so it does
-   not disappear while the learner uses the keypad or opens rough work. */
-@media (max-width:599px){
-  body:has(#columnMathPage.active) .topbar{margin-bottom:4px}
-  body:has(#columnMathPage.active) .topbar .date{display:none}
-  #columnMathPage .column-shell{padding:10px}
-  #columnMathPage .column-responsive{display:flex;flex-direction:column;gap:8px}
-  #columnMathPage .column-problem-pane{
-    position:sticky;
-    top:0;
-    z-index:5;
-    background:var(--card);
-    padding:2px 0 6px;
-    border-bottom:1px solid var(--border);
-  }
-  #columnMathPage .column-tools-pane{display:flex;flex-direction:column;gap:8px}
-  #columnMathPage .column-grid{gap:3px}
-  #columnMathPage .column-grid .digit{font-size:1.45rem;min-height:34px}
-  #columnMathPage .column-grid .cell{min-height:34px}
-  #columnMathPage .column-grid .ans{min-height:38px;font-size:1.15rem}
-  #columnMathPage .keypad{margin-top:0;gap:6px}
-  #columnMathPage .keypad button{min-height:42px}
-  #columnMathPage .column-tools-pane .learnbox{order:-1}
-}
-
 @media print{
   body{background:#fff}.topbar,.parentbtn,.back,.btnrow,.keypad,.qwerty,.rough,.speakrow{display:none!important}
   .app{max-width:none;padding:0}.card{border:0}
@@ -222,7 +110,7 @@ hr{border:0;border-top:1px solid var(--border);margin:18px 0}
 <body>
 <div class="app" id="app">
   <header class="topbar">
-    <div class="brand">Dakota Learning App <span class="version">v0.2.2</span></div>
+    <div class="brand">Learning Time <span class="version">v0.2</span></div>
     <div class="topright"><div class="date" id="todayDate"></div><button class="parentbtn" id="parentBtn">Parent</button></div>
   </header>
 
@@ -333,33 +221,25 @@ hr{border:0;border-top:1px solid var(--border);margin:18px 0}
         <div><b id="columnTitle">Column addition</b><div class="small" id="columnMeta"></div></div>
         <div class="progressline" id="columnProgress"></div>
       </div>
+      <div class="column-grid" id="columnGrid"></div>
+      <div class="small" style="text-align:center;margin-top:8px">Tap a working or answer box, then use the number pad.</div>
+      <div class="keypad" id="columnKeypad">
+        <button data-num="1">1</button><button data-num="2">2</button><button data-num="3">3</button>
+        <button data-num="4">4</button><button data-num="5">5</button><button data-num="6">6</button>
+        <button data-num="7">7</button><button data-num="8">8</button><button data-num="9">9</button>
+        <button id="columnBackspace">⌫</button><button data-num="0">0</button><button id="columnClear">Clear</button>
+        <button class="enter" id="columnCheck">Check answer</button>
+      </div>
+      <div class="feedback" id="columnFeedback"></div>
+      <div class="btnrow"><button class="btn secondary" id="columnLearnBtn">Show me how</button></div>
+      <div class="learnbox" id="columnLearnBox"></div>
 
-      <div class="column-responsive">
-        <div class="column-problem-pane">
-          <div class="column-grid" id="columnGrid"></div>
-          <div class="small column-instruction">Tap a working or answer box, then use the number pad.</div>
-          <div class="feedback" id="columnFeedback"></div>
-          <div class="btnrow column-learn-row"><button class="btn secondary" id="columnLearnBtn">Show me how</button></div>
+      <div class="rough">
+        <div class="roughhead">
+          <div><b>Rough work</b><div class="small">Optional. Use a finger or stylus like scrap paper.</div></div>
+          <div><button class="btn secondary" id="roughToggle">Open</button> <button class="btn secondary" id="roughClear" style="display:none">Clear</button></div>
         </div>
-
-        <div class="column-tools-pane">
-          <div class="learnbox" id="columnLearnBox"></div>
-          <div class="keypad" id="columnKeypad">
-            <button data-num="1">1</button><button data-num="2">2</button><button data-num="3">3</button>
-            <button data-num="4">4</button><button data-num="5">5</button><button data-num="6">6</button>
-            <button data-num="7">7</button><button data-num="8">8</button><button data-num="9">9</button>
-            <button id="columnBackspace">⌫</button><button data-num="0">0</button><button id="columnClear">Clear</button>
-            <button class="enter" id="columnCheck">Check answer</button>
-          </div>
-
-          <div class="rough">
-            <div class="roughhead">
-              <div><b>Rough work</b><div class="small">Optional. Use a finger or stylus like scrap paper.</div></div>
-              <div><button class="btn secondary" id="roughToggle">Open</button> <button class="btn secondary" id="roughClear" style="display:none">Clear</button></div>
-            </div>
-            <canvas id="roughCanvas" class="roughcanvas" width="1000" height="350"></canvas>
-          </div>
-        </div>
+        <canvas id="roughCanvas" class="roughcanvas" width="1000" height="350"></canvas>
       </div>
     </div>
   </section>
