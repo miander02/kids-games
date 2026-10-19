@@ -1,4 +1,4 @@
-# Kids Games / Learning App
+# Primary Learning App
 
 This repository contains versioned builds of the learning app.
 
@@ -22,3 +22,9 @@ Each release keeps its own `index.html`. Older version folders should not be ove
 4. Record the change in `CHANGELOG.md`.
 
 The app stores learner progress locally in the browser. Keep data-format compatibility in mind when changing saved state in future releases.
+
+
+## Portfolio demo
+The v0.1.3 build is retained as a portfolio/demo version at `/v0.1.3/`. Personal child names have been removed from the public build. The placeholder `[Child Name]` demonstrates where personalisation appears in the interface.
+
+All newer versions use a generic app identity and store child-specific information as user-entered profile data rather than hard-coded names.
