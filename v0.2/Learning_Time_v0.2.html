@@ -1,0 +1,1006 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Learning Time v0.2</title>
+<style>
+:root{
+  --bg:#f6f8fb;--card:#fff;--text:#1f2937;--muted:#667085;--border:#d8e0ea;
+  --accent:#315f9b;--accent-dark:#244a78;--accent-soft:#edf4fb;
+  --good:#2f7d4a;--bad:#a43f3f;--warn:#8a651f;--star:#c6901d;--ink:#2a3441;
+}
+*{box-sizing:border-box}
+html{font-size:16px}
+body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid rgba(49,95,155,.3);outline-offset:2px}
+.app{max-width:1040px;margin:0 auto;padding:16px}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
+.brand{font-size:1.1rem;font-weight:900}
+.version{color:var(--muted);font-size:.72rem;margin-left:5px}
+.topright{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.date{font-size:.9rem;color:var(--muted)}
+.parentbtn{border:1px solid var(--border);background:#fff;border-radius:999px;padding:9px 13px;font-weight:800}
+.page{display:none}.page.active{display:block}
+.hero{text-align:center;padding:28px 12px 20px}
+.hero h1{margin:0;font-size:clamp(2rem,6vw,3.25rem)}
+.hero p{font-size:1.08rem;color:var(--muted);margin:8px 0}
+.stars{color:var(--star);font-weight:900;margin:10px 0}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:18px}
+.action{min-height:112px;border:1px solid var(--border);border-radius:18px;background:#fff;padding:16px;text-align:left;display:flex;flex-direction:column;justify-content:center;gap:5px}
+.action:hover{border-color:#acbccd}.action .icon{font-size:1.7rem}.action strong{font-size:1.15rem}.action span{font-size:.92rem;color:var(--muted)}
+.wide{grid-column:1/-1}
+.back{border:0;background:none;color:var(--accent);font-weight:800;padding:7px 0 10px}
+h2{margin:4px 0 8px;font-size:1.7rem}.sub{color:var(--muted);margin:0 0 18px}
+.btn{border:0;border-radius:12px;background:var(--accent);color:#fff;font-weight:800;min-height:46px;padding:11px 16px}
+.btn:hover{background:var(--accent-dark)}
+.btn.secondary{background:#fff;color:var(--text);border:1px solid var(--border)}
+.btn.good{background:var(--good)}.btn.bad{background:var(--bad)}
+.btnrow{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:16px}
+.field{margin-bottom:14px}.field label{font-weight:800;display:block;margin-bottom:6px}
+input[type=text],input[type=number],input[type=password],select,textarea{width:100%;border:1px solid #cfd8e3;border-radius:12px;background:#fff;padding:11px 12px;color:var(--text)}
+textarea{min-height:120px;resize:vertical}
+.help{font-size:.88rem;color:var(--muted);margin-top:5px}
+.chips{display:flex;flex-wrap:wrap;gap:9px}
+.chip{border:1px solid var(--border);background:#fff;border-radius:999px;padding:9px 13px;font-weight:800}
+.chip.active{background:var(--accent-soft);border-color:#91abc7;color:#173c67}
+.segment{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.segment .seg{border:1px solid var(--border);background:#fff;border-radius:12px;padding:10px 14px;font-weight:850}
+.segment .seg.active{background:var(--accent-soft);border-color:#91abc7}
+.notice{border:1px solid #e5d39d;background:#fff8e8;color:#6b531e;border-radius:12px;padding:12px 14px}
+.progressline{font-weight:800;color:var(--muted)}
+.questionwrap{text-align:center}
+.question{font-size:clamp(2.5rem,8vw,5rem);font-weight:900;margin:18px 0}
+.timer{min-height:1.4em;font-weight:850;color:var(--warn)}
+.feedback{min-height:1.6em;font-weight:850;margin-top:12px}.feedback.good{color:var(--good)}.feedback.bad{color:var(--bad)}
+.keypad{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;max-width:360px;margin:15px auto 0}
+.keypad button{min-height:56px;border:1px solid var(--border);background:#fff;border-radius:13px;font-size:1.35rem;font-weight:900}
+.keypad .enter{grid-column:1/-1;background:var(--accent);color:#fff;border:0}
+.answerdisplay{max-width:360px;min-height:62px;border:1px solid var(--border);border-radius:14px;background:#fff;margin:0 auto;padding:10px 14px;font-size:2rem;font-weight:900;display:flex;align-items:center;justify-content:center;letter-spacing:.03em}
+.learnbox{display:none;margin-top:14px;border:1px solid var(--border);background:#fbfcfe;border-radius:14px;padding:14px;text-align:left}
+.learnbox.open{display:block}.learnbox h3{margin:0 0 8px}.learnbox p{margin:7px 0}
+.speakrow{display:flex;justify-content:center;gap:9px;flex-wrap:wrap;margin:14px 0}
+.spellanswer{max-width:620px;margin:12px auto;min-height:62px;border:1px solid var(--border);border-radius:14px;background:#fff;padding:10px 14px;font-size:1.8rem;font-weight:850;letter-spacing:.05em;display:flex;align-items:center;justify-content:center;word-break:break-word}
+.qwerty{max-width:760px;margin:14px auto 0}
+.keyrow{display:flex;justify-content:center;gap:7px;margin:7px 0}
+.keyrow button{width:56px;min-width:0;min-height:50px;border:1px solid var(--border);background:#fff;border-radius:10px;font-weight:900;font-size:1rem}
+.keyrow .control{width:auto;padding:0 16px;background:var(--accent-soft)}
+.column-shell{max-width:650px;margin:0 auto}
+.column-top{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:10px}
+.column-grid{--cols:4;display:grid;grid-template-columns:34px repeat(var(--cols),minmax(44px,64px));gap:5px;justify-content:center;align-items:center;overflow-x:auto;padding:4px}
+.column-grid .place{font-size:.78rem;color:var(--muted);font-weight:850;text-align:center}
+.column-grid .digit{font-size:2rem;font-weight:900;text-align:center;min-height:48px;display:flex;align-items:center;justify-content:center}
+.column-grid .op{font-size:1.9rem;font-weight:900;text-align:center}
+.column-grid .cell{min-height:46px;border:1px solid var(--border);border-radius:9px;background:#fff;display:flex;align-items:center;justify-content:center;font-size:1.25rem;font-weight:900}
+.column-grid .work{border-style:dashed;background:#fbfdff}
+.column-grid .cell.active{outline:3px solid rgba(49,95,155,.28);border-color:var(--accent)}
+.column-grid .rule{border-top:3px solid var(--ink);height:4px}
+.column-grid .ans{min-height:54px;font-size:1.55rem}
+.rough{margin-top:16px}.roughhead{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.roughcanvas{display:none;margin-top:10px;width:100%;height:180px;border:1px solid var(--border);border-radius:14px;background:#fff;touch-action:none}
+.roughcanvas.open{display:block}
+.statgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.stat{background:var(--accent-soft);border-radius:14px;padding:13px;text-align:center}.stat b{display:block;font-size:1.45rem}.stat span{font-size:.84rem;color:var(--muted)}
+.resultlist{list-style:none;padding:0;margin:14px 0}.resultlist li{padding:9px 0;border-bottom:1px solid var(--border)}
+.small{font-size:.88rem;color:var(--muted)}
+.modal{position:fixed;inset:0;background:rgba(18,28,40,.45);display:none;align-items:center;justify-content:center;padding:18px;z-index:50}
+.modal.open{display:flex}.modalcard{width:min(620px,100%);max-height:92vh;overflow:auto;background:#fff;border:1px solid var(--border);border-radius:18px;padding:20px}
+.setup{position:fixed;inset:0;background:var(--bg);display:none;align-items:center;justify-content:center;padding:20px;z-index:80}
+.setup.open{display:flex}.setupcard{width:min(560px,100%);background:#fff;border:1px solid var(--border);border-radius:20px;padding:22px}
+.checkgrid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.checkitem{border:1px solid var(--border);border-radius:10px;padding:9px;text-align:center;background:#fff}
+.checkitem input{width:20px;height:20px}
+hr{border:0;border-top:1px solid var(--border);margin:18px 0}
+@media(max-width:720px){
+  .app{padding:12px}.grid,.grid3{grid-template-columns:1fr}.wide{grid-column:auto}.topbar{align-items:flex-start;flex-direction:column}.topright{width:100%;justify-content:space-between}
+  .statgrid{grid-template-columns:repeat(2,1fr)}.checkgrid{grid-template-columns:repeat(3,1fr)}
+  .keyrow{gap:4px}.keyrow button{width:9.2vw;max-width:48px;min-height:46px;font-size:.92rem}.keyrow .control{width:auto;max-width:none;padding:0 10px}
+  .column-grid{grid-template-columns:28px repeat(var(--cols),minmax(38px,52px));gap:4px}.column-grid .digit{font-size:1.7rem}
+}
+@media print{
+  body{background:#fff}.topbar,.parentbtn,.back,.btnrow,.keypad,.qwerty,.rough,.speakrow{display:none!important}
+  .app{max-width:none;padding:0}.card{border:0}
+}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+  <header class="topbar">
+    <div class="brand">Learning Time <span class="version">v0.2</span></div>
+    <div class="topright"><div class="date" id="todayDate"></div><button class="parentbtn" id="parentBtn">Parent</button></div>
+  </header>
+
+  <section id="homePage" class="page active">
+    <div class="hero">
+      <h1 id="homeGreeting">Hi! ⭐</h1>
+      <p id="homeDate"></p>
+      <div class="stars" id="homeStars">0 stars</div>
+      <p>What would you like to do today?</p>
+    </div>
+    <div class="grid">
+      <button class="action" data-go="mathsPage"><span class="icon">➗</span><strong>Maths</strong><span>Practise, get help when you need it, or try a challenge</span></button>
+      <button class="action" data-go="spellingPage"><span class="icon">🔤</span><strong>Spelling</strong><span>Hear words, spell them, and revisit tricky ones</span></button>
+      <button class="action wide" data-go="progressPage"><span class="icon">⭐</span><strong>My Progress</strong><span>Stars, recent work and tricky words</span></button>
+    </div>
+  </section>
+
+  <section id="mathsPage" class="page">
+    <button class="back" data-go="homePage">← Home</button>
+    <h2>Maths</h2>
+    <p class="sub">Practise is the main mode. If you get stuck, tap <b>Show me how</b>. Challenge removes some of the help.</p>
+    <div class="grid">
+      <button class="action" data-math="times"><span class="icon">✖</span><strong>Times Tables</strong><span>Traditional facts, mixed tables and quick recall</span></button>
+      <button class="action" data-math="division"><span class="icon">➗</span><strong>Division</strong><span>Related division facts and inverse thinking</span></button>
+      <button class="action" data-math="addition"><span class="icon">➕</span><strong>Column Addition</strong><span>Proper place-value columns with working space</span></button>
+      <button class="action" data-math="subtraction"><span class="icon">➖</span><strong>Column Subtraction</strong><span>Exchange across place-value columns</span></button>
+      <button class="action wide" data-math="mtc"><span class="icon">⚡</span><strong>Times Tables Check</strong><span>25-question MTC-style challenge with adjustable timing</span></button>
+    </div>
+  </section>
+
+  <section id="spellingPage" class="page">
+    <button class="back" data-go="homePage">← Home</button>
+    <h2>Spelling</h2>
+    <p class="sub">Hear the word, spell it with the app keyboard, and build a personal Tricky Words list.</p>
+    <div class="grid">
+      <button class="action" data-spell="current"><span class="icon">🔊</span><strong>Current Levels</strong><span>Random words from the spelling years selected by your parent</span></button>
+      <button class="action" data-spell="mixed"><span class="icon">🎲</span><strong>Mixed Spellings</strong><span>Mix current levels, school spellings and tricky words</span></button>
+      <button class="action" data-spell="school"><span class="icon">🏫</span><strong>Weekly School Spellings</strong><span>Words added in the Parent section</span></button>
+      <button class="action" data-spell="tricky"><span class="icon">🔁</span><strong>Tricky Words</strong><span>Words previously spelled incorrectly</span></button>
+    </div>
+  </section>
+
+  <section id="activitySetupPage" class="page">
+    <button class="back" id="activityBack">← Back</button>
+    <h2 id="setupTitle">Set up activity</h2>
+    <p class="sub" id="setupSub"></p>
+    <div class="card">
+      <div class="field">
+        <label>Mode</label>
+        <div class="segment">
+          <button class="seg active" data-mode="practice">Practise</button>
+          <button class="seg" data-mode="challenge">Challenge</button>
+        </div>
+        <div class="help">Practise shows place-value labels and lets you ask for help. Challenge keeps the same maths but removes some scaffolding.</div>
+      </div>
+      <div class="field" id="yearChoiceField">
+        <label>Working level</label>
+        <div class="chips" id="workingYearChips"></div>
+      </div>
+      <div class="field" id="tableChoiceField" style="display:none">
+        <label>Choose a table</label>
+        <div class="chips" id="tableChips"></div>
+      </div>
+      <div class="field" id="questionCountField">
+        <label>Questions</label>
+        <div class="chips" id="questionCountChips">
+          <button class="chip active" data-count="10">10</button>
+          <button class="chip" data-count="15">15</button>
+          <button class="chip" data-count="20">20</button>
+        </div>
+      </div>
+      <div id="mtcOptions" style="display:none">
+        <div class="field"><label><input type="checkbox" id="mtcShowTimer"> Show timer</label></div>
+        <div class="field"><label><input type="checkbox" id="mtcTimeout"> Use timeout</label></div>
+        <div class="field"><label for="mtcSeconds">Seconds per question</label><input type="number" id="mtcSeconds" min="3" max="30" step="1" value="6"></div>
+      </div>
+      <div class="btnrow"><button class="btn" id="startActivityBtn">Start</button></div>
+    </div>
+  </section>
+
+  <section id="basicMathPage" class="page">
+    <button class="back" data-go="mathsPage">← Maths</button>
+    <div class="card questionwrap">
+      <div class="progressline" id="basicProgress"></div>
+      <div class="timer" id="basicTimer"></div>
+      <div class="question" id="basicQuestion"></div>
+      <div class="answerdisplay" id="basicAnswer">&nbsp;</div>
+      <div class="keypad" id="basicKeypad">
+        <button data-num="1">1</button><button data-num="2">2</button><button data-num="3">3</button>
+        <button data-num="4">4</button><button data-num="5">5</button><button data-num="6">6</button>
+        <button data-num="7">7</button><button data-num="8">8</button><button data-num="9">9</button>
+        <button id="basicBackspace">⌫</button><button data-num="0">0</button><button id="basicClear">Clear</button>
+        <button class="enter" id="basicCheck">Check</button>
+      </div>
+      <div class="feedback" id="basicFeedback"></div>
+      <div class="btnrow">
+        <button class="btn secondary" id="basicLearnBtn">Show me how</button>
+        <button class="btn secondary" id="basicHearTableBtn" style="display:none">Hear this table</button>
+      </div>
+      <div class="learnbox" id="basicLearnBox"></div>
+    </div>
+  </section>
+
+  <section id="columnMathPage" class="page">
+    <button class="back" data-go="mathsPage">← Maths</button>
+    <div class="card column-shell">
+      <div class="column-top">
+        <div><b id="columnTitle">Column addition</b><div class="small" id="columnMeta"></div></div>
+        <div class="progressline" id="columnProgress"></div>
+      </div>
+      <div class="column-grid" id="columnGrid"></div>
+      <div class="small" style="text-align:center;margin-top:8px">Tap a working or answer box, then use the number pad.</div>
+      <div class="keypad" id="columnKeypad">
+        <button data-num="1">1</button><button data-num="2">2</button><button data-num="3">3</button>
+        <button data-num="4">4</button><button data-num="5">5</button><button data-num="6">6</button>
+        <button data-num="7">7</button><button data-num="8">8</button><button data-num="9">9</button>
+        <button id="columnBackspace">⌫</button><button data-num="0">0</button><button id="columnClear">Clear</button>
+        <button class="enter" id="columnCheck">Check answer</button>
+      </div>
+      <div class="feedback" id="columnFeedback"></div>
+      <div class="btnrow"><button class="btn secondary" id="columnLearnBtn">Show me how</button></div>
+      <div class="learnbox" id="columnLearnBox"></div>
+
+      <div class="rough">
+        <div class="roughhead">
+          <div><b>Rough work</b><div class="small">Optional. Use a finger or stylus like scrap paper.</div></div>
+          <div><button class="btn secondary" id="roughToggle">Open</button> <button class="btn secondary" id="roughClear" style="display:none">Clear</button></div>
+        </div>
+        <canvas id="roughCanvas" class="roughcanvas" width="1000" height="350"></canvas>
+      </div>
+    </div>
+  </section>
+
+  <section id="spellingRunPage" class="page">
+    <button class="back" data-go="spellingPage">← Spelling</button>
+    <div class="card questionwrap">
+      <div class="progressline" id="spellProgress"></div>
+      <h2 style="margin-top:12px" id="spellRunTitle">Hear & Spell</h2>
+      <p class="sub">The word stays hidden. Use the QWERTY keyboard below.</p>
+      <div class="speakrow">
+        <button class="btn" id="speakWordBtn">🔊 Hear word</button>
+        <button class="btn secondary" id="speakSentenceBtn">🔊 Hear in a sentence</button>
+      </div>
+      <div class="spellanswer" id="spellAnswer">&nbsp;</div>
+      <div class="qwerty" id="qwerty">
+        <div class="keyrow" data-row="qwerty"></div>
+        <div class="keyrow" data-row="asdf"></div>
+        <div class="keyrow" data-row="zxc"></div>
+      </div>
+      <div class="feedback" id="spellFeedback"></div>
+      <div class="btnrow">
+        <button class="btn" id="spellCheckBtn">Check</button>
+        <button class="btn secondary" id="spellLearnBtn">Show me how</button>
+      </div>
+      <div class="learnbox" id="spellLearnBox"></div>
+    </div>
+  </section>
+
+  <section id="resultPage" class="page">
+    <button class="back" data-go="homePage">← Home</button>
+    <div class="card">
+      <div class="hero" style="padding-top:8px">
+        <h2 id="resultTitle">Great work!</h2>
+        <div class="question" style="margin:8px 0" id="resultScore"></div>
+        <p id="resultSummary"></p>
+      </div>
+      <div class="statgrid" id="resultStats"></div>
+      <ul class="resultlist" id="resultDetails"></ul>
+      <div class="btnrow"><button class="btn" data-go="homePage">Home</button><button class="btn secondary" id="resultAgain">Do another</button></div>
+    </div>
+  </section>
+
+  <section id="progressPage" class="page">
+    <button class="back" data-go="homePage">← Home</button>
+    <h2 id="progressTitle">My Progress</h2>
+    <div class="statgrid" id="progressStats"></div>
+    <div class="card" style="margin-top:14px"><h3>Recent work</h3><ul class="resultlist" id="recentResults"></ul></div>
+    <div class="card" style="margin-top:14px"><h3>Tricky Words</h3><p class="small">A word leaves this list after 3 correct spellings in a row.</p><div id="trickyWordView"></div></div>
+    <div class="btnrow"><button class="btn secondary" onclick="window.print()">Print progress</button></div>
+  </section>
+</div>
+
+<div class="setup" id="firstSetup">
+  <div class="setupcard">
+    <h2>Welcome 👋</h2>
+    <p class="sub">A couple of details first. These can be changed later in the Parent section.</p>
+    <div class="field"><label for="firstName">Child's name</label><input id="firstName" type="text" autocomplete="off"></div>
+    <div class="field"><label for="firstYear">School year</label>
+      <select id="firstYear"><option value="2">Year 2</option><option value="3">Year 3</option><option value="4" selected>Year 4</option><option value="5">Year 5</option><option value="6">Year 6</option></select>
+    </div>
+    <button class="btn" id="saveFirstSetup">Start learning</button>
+  </div>
+</div>
+
+<div class="modal" id="pinModal">
+  <div class="modalcard">
+    <h2>Parent area</h2>
+    <div class="field"><label for="pinEntry">PIN</label><input id="pinEntry" type="password" inputmode="numeric"></div>
+    <div class="btnrow"><button class="btn" id="pinOpen">Open</button><button class="btn secondary" id="pinCancel">Cancel</button></div>
+  </div>
+</div>
+
+<div class="modal" id="parentModal">
+  <div class="modalcard">
+    <h2>Parent settings</h2>
+    <div class="field"><label for="parentName">Child's name</label><input id="parentName" type="text"></div>
+    <div class="field"><label for="parentSchoolYear">School year</label>
+      <select id="parentSchoolYear"><option value="2">Year 2</option><option value="3">Year 3</option><option value="4">Year 4</option><option value="5">Year 5</option><option value="6">Year 6</option></select>
+    </div>
+
+    <div class="field"><label>Maths working levels</label><div class="checkgrid" id="mathLevelChecks"></div><div class="help">Select one or more. For example, school year 4 can still practise Year 3 and Year 4 maths.</div></div>
+    <div class="field"><label>Spelling working levels</label><div class="checkgrid" id="spellLevelChecks"></div><div class="help">Years 3 & 4 share a statutory list; Years 5 & 6 share a statutory list. Selecting both is fine.</div></div>
+
+    <div class="field"><label for="voiceGender">Voice</label>
+      <select id="voiceGender"><option value="female">Female (default)</option><option value="male">Male</option></select>
+      <div class="help">The app uses the closest UK English voice available on the device.</div>
+      <div style="margin-top:8px"><button class="btn secondary" id="testVoiceBtn">Test voice</button></div>
+    </div>
+
+    <div class="field"><label for="schoolWords">Weekly School Spellings</label><textarea id="schoolWords" placeholder="Enter one word per line"></textarea><div class="help">These are separate from the built-in statutory spelling libraries.</div></div>
+
+    <hr>
+    <h3>Times Tables Check defaults</h3>
+    <div class="field"><label><input type="checkbox" id="parentMtcShow"> Show timer</label></div>
+    <div class="field"><label><input type="checkbox" id="parentMtcTimeout"> Use timeout</label></div>
+    <div class="field"><label for="parentMtcSeconds">Seconds per question</label><input id="parentMtcSeconds" type="number" min="3" max="30" value="6"></div>
+
+    <hr>
+    <div class="field"><label for="parentPin">Parent PIN</label><input id="parentPin" type="password" inputmode="numeric"></div>
+    <div class="btnrow"><button class="btn" id="saveParent">Save settings</button><button class="btn secondary" id="closeParent">Close</button></div>
+
+    <hr>
+    <h3>Backup and export</h3>
+    <div class="btnrow">
+      <button class="btn secondary" id="exportJson">Export backup</button>
+      <button class="btn secondary" id="exportCsv">Export results CSV</button>
+      <button class="btn secondary" id="importJsonBtn">Import backup</button>
+      <input type="file" id="importJsonFile" accept=".json,application/json" hidden>
+    </div>
+  </div>
+</div>
+
+<script>
+(() => {
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const STORE_KEY='learningTime_v02';
+const clone=o=>JSON.parse(JSON.stringify(o));
+const OLD_KEY='dakotaLearning_v01';
+
+const WORDS_YEAR2 = ["after", "again", "any", "bath", "beautiful", "because", "behind", "both", "break", "busy", "child", "children", "Christmas", "class", "climb", "clothes", "cold", "could", "door", "even", "every", "everybody", "eye", "fast", "father", "find", "floor", "gold", "grass", "great", "half", "hold", "hour", "improve", "kind", "last", "many", "mind", "money", "most", "move", "Mr", "Mrs", "old", "only", "parents", "pass", "past", "path", "people", "plant", "poor", "pretty", "prove", "should", "steak", "sugar", "sure", "told", "water", "who", "whole", "wild", "would"];
+const WORDS_YEAR34 = ["accident", "accidentally", "actual", "actually", "address", "answer", "appear", "arrive", "believe", "bicycle", "breath", "breathe", "build", "busy", "business", "calendar", "caught", "centre", "century", "certain", "circle", "complete", "consider", "continue", "decide", "describe", "different", "difficult", "disappear", "early", "earth", "eight", "eighth", "enough", "exercise", "experience", "experiment", "extreme", "famous", "favourite", "February", "forward", "forwards", "fruit", "grammar", "group", "guard", "guide", "heard", "heart", "height", "history", "imagine", "increase", "important", "interest", "island", "knowledge", "learn", "length", "library", "material", "medicine", "mention", "minute", "natural", "naughty", "notice", "occasion", "occasionally", "often", "opposite", "ordinary", "particular", "peculiar", "perhaps", "popular", "position", "possess", "possession", "possible", "potatoes", "pressure", "probably", "promise", "purpose", "quarter", "question", "recent", "regular", "reign", "remember", "sentence", "separate", "special", "straight", "strange", "strength", "suppose", "surprise", "therefore", "though", "although", "thought", "through", "various", "weight", "woman", "women"];
+const WORDS_YEAR56 = ["accommodate", "accompany", "according", "achieve", "aggressive", "amateur", "ancient", "apparent", "appreciate", "attached", "available", "average", "awkward", "bargain", "bruise", "category", "cemetery", "committee", "communicate", "community", "competition", "conscience", "conscious", "controversy", "convenience", "correspond", "criticise", "curiosity", "definite", "desperate", "determined", "develop", "dictionary", "disastrous", "embarrass", "environment", "equipped", "equipment", "especially", "exaggerate", "excellent", "existence", "explanation", "familiar", "foreign", "forty", "frequently", "government", "guarantee", "harass", "hindrance", "identity", "immediate", "immediately", "individual", "interfere", "interrupt", "language", "leisure", "lightning", "marvellous", "mischievous", "muscle", "necessary", "neighbour", "nuisance", "occupy", "occur", "opportunity", "parliament", "persuade", "physical", "prejudice", "privilege", "profession", "programme", "pronunciation", "queue", "recognise", "recommend", "relevant", "restaurant", "rhyme", "rhythm", "sacrifice", "secretary", "shoulder", "signature", "sincere", "sincerely", "soldier", "stomach", "sufficient", "suggest", "symbol", "system", "temperature", "thorough", "twelfth", "variety", "vegetable", "vehicle", "yacht"];
+
+const defaultState={
+  profile:{name:'',schoolYear:4},
+  mathsLevels:[4],
+  spellingLevels:[4],
+  stars:0,
+  results:[],
+  schoolWords:[],
+  trickyWords:[],
+  wordStats:{},
+  parentPin:'1234',
+  voiceGender:'female',
+  mtc:{showTimer:true,useTimeout:false,seconds:6}
+};
+
+let state=loadState();
+let current={};
+let session={};
+let lastSetup={kind:null};
+let timerHandle=null;
+let questionStarted=0;
+let canvasDrawing=false;
+
+function loadState(){
+  try{
+    const saved=JSON.parse(localStorage.getItem(STORE_KEY)||'null');
+    if(saved) return deepMerge(clone(defaultState),saved);
+    const old=JSON.parse(localStorage.getItem(OLD_KEY)||'null');
+    if(old){
+      const migrated=clone(defaultState);
+      migrated.stars=old.stars||0;
+      migrated.results=Array.isArray(old.results)?old.results:[];
+      migrated.schoolWords=Array.isArray(old.schoolWords)?old.schoolWords:[];
+      migrated.trickyWords=Array.isArray(old.trickyWords)?old.trickyWords:[];
+      return migrated;
+    }
+  }catch(e){}
+  return clone(defaultState);
+}
+function deepMerge(base,extra){
+  for(const [k,v] of Object.entries(extra||{})){
+    if(v && typeof v==='object' && !Array.isArray(v) && base[k] && typeof base[k]==='object' && !Array.isArray(base[k])) base[k]=deepMerge(base[k],v);
+    else base[k]=v;
+  }
+  return base;
+}
+function saveState(){localStorage.setItem(STORE_KEY,JSON.stringify(state));refreshAll();}
+function fmtDate(d=new Date()){return new Intl.DateTimeFormat('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'}).format(d)}
+function isoDay(d=new Date()){return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-')}
+function shuffle(a){a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function pick(a){return a[Math.floor(Math.random()*a.length)]}
+function uniq(a){return [...new Set(a)]}
+function clamp(n,a,b){return Math.max(a,Math.min(b,n))}
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
+function showPage(id){
+  stopTimer();
+  $$('.page').forEach(p=>p.classList.remove('active'));
+  $('#'+id).classList.add('active');
+  window.scrollTo(0,0);
+  if(id==='progressPage') renderProgress();
+}
+$$('[data-go]').forEach(b=>b.addEventListener('click',()=>showPage(b.dataset.go)));
+
+function refreshAll(){
+  const name=state.profile.name||'Learner';
+  $('#todayDate').textContent=fmtDate();
+  $('#homeDate').textContent=fmtDate();
+  $('#homeGreeting').textContent=`Hi ${name}! ⭐`;
+  $('#homeStars').textContent=`${state.stars} star${state.stars===1?'':'s'}`;
+  $('#progressTitle').textContent=`${name}'s Progress`;
+}
+refreshAll();
+if(!state.profile.name) $('#firstSetup').classList.add('open');
+
+$('#saveFirstSetup').addEventListener('click',()=>{
+  const name=$('#firstName').value.trim();
+  const y=Number($('#firstYear').value);
+  if(!name){alert('Please enter a name.');return}
+  state.profile={name,schoolYear:y};
+  state.mathsLevels=[y];
+  state.spellingLevels=[y];
+  saveState();
+  $('#firstSetup').classList.remove('open');
+});
+
+function renderLevelChecks(){
+  for(const [id,selected] of [['mathLevelChecks',state.mathsLevels],['spellLevelChecks',state.spellingLevels]]){
+    const el=$('#'+id); el.innerHTML='';
+    for(let y=2;y<=6;y++){
+      const lab=document.createElement('label'); lab.className='checkitem';
+      lab.innerHTML=`<div>Year ${y}</div><input type="checkbox" value="${y}" ${selected.includes(y)?'checked':''}>`;
+      el.appendChild(lab);
+    }
+  }
+}
+function openParent(){
+  $('#parentName').value=state.profile.name;
+  $('#parentSchoolYear').value=state.profile.schoolYear;
+  $('#voiceGender').value=state.voiceGender||'female';
+  $('#schoolWords').value=(state.schoolWords||[]).join('\n');
+  $('#parentPin').value=state.parentPin||'1234';
+  $('#parentMtcShow').checked=!!state.mtc.showTimer;
+  $('#parentMtcTimeout').checked=!!state.mtc.useTimeout;
+  $('#parentMtcSeconds').value=state.mtc.seconds||6;
+  renderLevelChecks();
+  $('#parentModal').classList.add('open');
+}
+$('#parentBtn').addEventListener('click',()=>{$('#pinEntry').value='';$('#pinModal').classList.add('open')});
+$('#pinCancel').addEventListener('click',()=>$('#pinModal').classList.remove('open'));
+$('#pinOpen').addEventListener('click',()=>{
+  if($('#pinEntry').value===(state.parentPin||'1234')){$('#pinModal').classList.remove('open');openParent()}
+  else alert('Incorrect PIN.');
+});
+$('#closeParent').addEventListener('click',()=>$('#parentModal').classList.remove('open'));
+$('#saveParent').addEventListener('click',()=>{
+  const name=$('#parentName').value.trim();
+  if(!name){alert('Please enter a name.');return}
+  const maths=$$('#mathLevelChecks input:checked').map(x=>Number(x.value));
+  const spelling=$$('#spellLevelChecks input:checked').map(x=>Number(x.value));
+  if(!maths.length || !spelling.length){alert('Choose at least one maths level and one spelling level.');return}
+  state.profile.name=name;
+  state.profile.schoolYear=Number($('#parentSchoolYear').value);
+  state.mathsLevels=maths.sort();
+  state.spellingLevels=spelling.sort();
+  state.voiceGender=$('#voiceGender').value;
+  state.schoolWords=uniq($('#schoolWords').value.split(/\r?\n/).map(x=>x.trim()).filter(Boolean));
+  state.parentPin=$('#parentPin').value.trim()||'1234';
+  state.mtc={
+    showTimer:$('#parentMtcShow').checked,
+    useTimeout:$('#parentMtcTimeout').checked,
+    seconds:clamp(Number($('#parentMtcSeconds').value)||6,3,30)
+  };
+  saveState();
+  $('#parentModal').classList.remove('open');
+});
+$('#testVoiceBtn').addEventListener('click',()=>speak(`Hello ${state.profile.name||'there'}, let's practise together.`));
+
+function getVoice(){
+  const voices=speechSynthesis.getVoices();
+  const en=voices.filter(v=>/^en(-|_)/i.test(v.lang));
+  const uk=en.filter(v=>/en-GB/i.test(v.lang));
+  const pool=uk.length?uk:en.length?en:voices;
+  const femaleHints=['female','samantha','serena','susan','hazel','libby','sonia','fiona','victoria','karen','moira','veena','tessa'];
+  const maleHints=['male','daniel','george','ryan','oliver','thomas','arthur','fred','alex'];
+  const hints=state.voiceGender==='male'?maleHints:femaleHints;
+  return pool.find(v=>hints.some(h=>v.name.toLowerCase().includes(h)))||pool[0]||null;
+}
+function speak(text,rate=.9){
+  if(!('speechSynthesis' in window)){alert('Speech is not available in this browser.');return}
+  speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(text);
+  u.lang='en-GB';u.rate=rate;
+  const v=getVoice();if(v)u.voice=v;
+  speechSynthesis.speak(u);
+}
+if('speechSynthesis' in window) speechSynthesis.onvoiceschanged=()=>{};
+
+$('#exportJson').addEventListener('click',()=>downloadText(`learning-backup-${isoDay()}.json`,JSON.stringify(state,null,2),'application/json'));
+$('#exportCsv').addEventListener('click',()=>{
+  const rows=[['date','subject','activity','mode','score','total','accuracy','seconds','details']];
+  for(const r of state.results||[]) rows.push([r.date,r.subject,r.activity,r.mode||'',r.score,r.total,r.total?Math.round(r.score/r.total*100):'',r.seconds||'',(r.details||[]).join(' | ')]);
+  const csv=rows.map(row=>row.map(v=>`"${String(v??'').replace(/"/g,'""')}"`).join(',')).join('\n');
+  downloadText(`learning-results-${isoDay()}.csv`,csv,'text/csv');
+});
+$('#importJsonBtn').addEventListener('click',()=>$('#importJsonFile').click());
+$('#importJsonFile').addEventListener('change',async e=>{
+  const f=e.target.files[0];if(!f)return;
+  try{const data=JSON.parse(await f.text());state=deepMerge(clone(defaultState),data);saveState();openParent();alert('Backup imported.')}
+  catch(err){alert('That backup file could not be read.')}
+});
+function downloadText(name,text,type){
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type}));a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+}
+
+const levelTables={
+  2:[2,5,10],
+  3:[2,3,4,5,8,10],
+  4:[2,3,4,5,6,7,8,9,10,11,12],
+  5:[2,3,4,5,6,7,8,9,10,11,12],
+  6:[2,3,4,5,6,7,8,9,10,11,12]
+};
+function allowedTables(){
+  const years=state.mathsLevels.length?state.mathsLevels:[state.profile.schoolYear||4];
+  return uniq(years.flatMap(y=>levelTables[y]||levelTables[4])).sort((a,b)=>a-b);
+}
+function digitCountForYear(y){return ({2:2,3:3,4:4,5:5,6:6})[y]||4}
+
+let setupConfig={kind:'times',mode:'practice',year:4,table:'mixed',count:10};
+
+$$('[data-math]').forEach(btn=>btn.addEventListener('click',()=>openMathSetup(btn.dataset.math)));
+function openMathSetup(kind){
+  setupConfig.kind=kind;
+  setupConfig.mode='practice';
+  setupConfig.year=Math.max(...(state.mathsLevels||[state.profile.schoolYear||4]));
+  setupConfig.table='mixed';setupConfig.count=kind==='mtc'?25:10;
+  lastSetup={kind};
+  $('#setupTitle').textContent=kind==='times'?'Times Tables':kind==='division'?'Division':kind==='addition'?'Column Addition':kind==='subtraction'?'Column Subtraction':'Times Tables Check';
+  $('#setupSub').textContent=kind==='mtc'?'This follows the 25-question check style.':'Practise is the main mode. Challenge removes some scaffolding.';
+  $$('.seg').forEach(s=>s.classList.toggle('active',s.dataset.mode==='practice'));
+  $('#yearChoiceField').style.display=kind==='mtc'?'none':'block';
+  $('#tableChoiceField').style.display=(kind==='times'||kind==='division')?'block':'none';
+  $('#questionCountField').style.display=kind==='mtc'?'none':'block';
+  $('#mtcOptions').style.display=kind==='mtc'?'block':'none';
+  renderWorkingYears();
+  renderTableChips();
+  if(kind==='mtc'){
+    $('#mtcShowTimer').checked=!!state.mtc.showTimer;
+    $('#mtcTimeout').checked=!!state.mtc.useTimeout;
+    $('#mtcSeconds').value=state.mtc.seconds||6;
+  }
+  showPage('activitySetupPage');
+}
+$('#activityBack').addEventListener('click',()=>showPage(lastSetup.kind==='spell'?'spellingPage':'mathsPage'));
+$$('.seg').forEach(s=>s.addEventListener('click',()=>{
+  setupConfig.mode=s.dataset.mode;
+  $$('.seg').forEach(x=>x.classList.toggle('active',x===s));
+}));
+function renderWorkingYears(){
+  const el=$('#workingYearChips');el.innerHTML='';
+  const years=state.mathsLevels.length?state.mathsLevels:[state.profile.schoolYear||4];
+  years.forEach(y=>{
+    const b=document.createElement('button');b.className='chip'+(y===setupConfig.year?' active':'');b.textContent=`Year ${y}`;
+    b.addEventListener('click',()=>{setupConfig.year=y;renderWorkingYears()});el.appendChild(b);
+  });
+}
+function renderTableChips(){
+  const el=$('#tableChips');el.innerHTML='';
+  const tables=allowedTables();
+  const values=['mixed',...tables];
+  values.forEach(v=>{
+    const b=document.createElement('button');b.className='chip'+(String(v)===String(setupConfig.table)?' active':'');b.textContent=v==='mixed'?'Mixed':`${v}×`;
+    b.addEventListener('click',()=>{setupConfig.table=v;renderTableChips()});el.appendChild(b);
+  });
+}
+$$('#questionCountChips .chip').forEach(b=>b.addEventListener('click',()=>{
+  setupConfig.count=Number(b.dataset.count);
+  $$('#questionCountChips .chip').forEach(x=>x.classList.toggle('active',x===b));
+}));
+$('#startActivityBtn').addEventListener('click',()=>{
+  if(setupConfig.kind==='mtc'){
+    setupConfig.mode='challenge';setupConfig.count=25;setupConfig.table='mixed';
+    setupConfig.mtc={showTimer:$('#mtcShowTimer').checked,useTimeout:$('#mtcTimeout').checked,seconds:clamp(Number($('#mtcSeconds').value)||6,3,30)};
+    startBasicMath('mtc');
+  }else if(setupConfig.kind==='addition'||setupConfig.kind==='subtraction') startColumnMath();
+  else startBasicMath(setupConfig.kind);
+});
+
+function startBasicMath(kind){
+  stopTimer();
+  session={
+    subject:'Maths',activity:kind==='mtc'?'Times Tables Check':kind==='times'?'Times Tables':'Division',
+    mode:setupConfig.mode,questions:[],index:0,score:0,details:[],started:Date.now(),answer:'',times:[]
+  };
+  const count=kind==='mtc'?25:setupConfig.count;
+  for(let i=0;i<count;i++) session.questions.push(makeBasicQuestion(kind));
+  showPage('basicMathPage');
+  $('#basicHearTableBtn').style.display=kind==='times'?'inline-block':'none';
+  renderBasicQuestion();
+}
+function makeBasicQuestion(kind){
+  const tables=allowedTables();
+  const table=setupConfig.table==='mixed'?pick(tables):Number(setupConfig.table);
+  let multiplier=Math.floor(Math.random()*11)+2;
+  if(kind==='mtc'){
+    const harder=[6,7,8,9,12];
+    const a=Math.random()<.62?pick(harder):pick(tables);
+    const b=Math.floor(Math.random()*11)+2;
+    return {kind,a,b,display:`${a} × ${b}`,answer:a*b,table:a};
+  }
+  if(kind==='times') return {kind,a:table,b:multiplier,display:`${table} × ${multiplier}`,answer:table*multiplier,table};
+  const product=table*multiplier;
+  return {kind,a:product,b:table,display:`${product} ÷ ${table}`,answer:multiplier,table};
+}
+function renderBasicQuestion(){
+  stopTimer();
+  const q=session.questions[session.index];
+  session.answer='';session.currentWrong=false;questionStarted=Date.now();
+  $('#basicProgress').textContent=`Question ${session.index+1} of ${session.questions.length}`;
+  $('#basicQuestion').textContent=q.display;
+  $('#basicAnswer').innerHTML='&nbsp;';
+  $('#basicFeedback').textContent='';$('#basicFeedback').className='feedback';
+  $('#basicLearnBox').classList.remove('open');$('#basicLearnBox').innerHTML='';
+  $('#basicTimer').textContent='';
+  if(q.kind==='mtc'){
+    const opts=setupConfig.mtc;
+    if(opts.showTimer||opts.useTimeout) startQuestionTimer(opts.seconds,opts.showTimer,opts.useTimeout);
+  }
+}
+function startQuestionTimer(seconds,show,useTimeout){
+  const start=Date.now();
+  const el=$('#basicTimer');
+  timerHandle=setInterval(()=>{
+    const elapsed=(Date.now()-start)/1000;
+    const remain=Math.max(0,seconds-elapsed);
+    if(show) el.textContent=`${remain.toFixed(1)}s`;
+    if(useTimeout && remain<=0){
+      stopTimer();
+      markBasic(false,true);
+    }
+  },100);
+}
+function stopTimer(){if(timerHandle){clearInterval(timerHandle);timerHandle=null}}
+$$('#basicKeypad [data-num]').forEach(b=>b.addEventListener('click',()=>{
+  if(session.answer.length<6) session.answer+=b.dataset.num;renderBasicAnswer();
+}));
+$('#basicBackspace').addEventListener('click',()=>{session.answer=session.answer.slice(0,-1);renderBasicAnswer()});
+$('#basicClear').addEventListener('click',()=>{session.answer='';renderBasicAnswer()});
+function renderBasicAnswer(){$('#basicAnswer').textContent=session.answer||'\u00a0'}
+$('#basicCheck').addEventListener('click',()=>{
+  if(!session.answer){$('#basicFeedback').textContent='Enter an answer first.';return}
+  const q=session.questions[session.index];
+  markBasic(Number(session.answer)===q.answer,false);
+});
+function markBasic(correct,timedOut){
+  stopTimer();
+  const q=session.questions[session.index];
+  const secs=(Date.now()-questionStarted)/1000;
+  session.times.push(secs);
+  if(correct && !session.currentWrong)session.score++;
+  else if(!correct){session.currentWrong=true; session.details.push(`${q.display} = ${q.answer}${timedOut?' (time limit)':''}`);}
+  $('#basicFeedback').textContent=correct?'Correct! ⭐':timedOut?`Time. The answer was ${q.answer}.`:`Not quite. Try “Show me how”.`;
+  $('#basicFeedback').className='feedback '+(correct?'good':'bad');
+  if(correct || setupConfig.mode==='challenge' || timedOut) setTimeout(nextBasic,correct?450:950);
+}
+function nextBasic(){
+  session.index++;
+  if(session.index>=session.questions.length)finishSession();
+  else renderBasicQuestion();
+}
+$('#basicLearnBtn').addEventListener('click',()=>{
+  const q=session.questions[session.index],box=$('#basicLearnBox');
+  box.innerHTML=basicExplanation(q);box.classList.add('open');
+});
+function basicExplanation(q){
+  if(q.kind==='division') return `<h3>Let's work it out</h3><p>Think of the related multiplication.</p><p><b>${q.b} × ? = ${q.a}</b></p><p>${q.b} × ${q.answer} = ${q.a}, so <b>${q.a} ÷ ${q.b} = ${q.answer}</b>.</p>`;
+  return `<h3>Let's work it out</h3><p>${q.a} × ${q.b} means ${q.b} groups of ${q.a}.</p><p>You can split ${q.b} into easier parts, or count in ${q.a}s.</p><p><b>${q.a} × ${q.b} = ${q.answer}</b></p>`;
+}
+$('#basicHearTableBtn').addEventListener('click',()=>{
+  const q=session.questions[session.index];const n=q.table;
+  const vals=Array.from({length:12},(_,i)=>n*(i+1));
+  speak(`Let's count in ${n}s. ${vals.join('. ')}.`,.78);
+});
+
+let column={};
+function startColumnMath(){
+  session={
+    subject:'Maths',activity:setupConfig.kind==='addition'?'Column Addition':'Column Subtraction',
+    mode:setupConfig.mode,questions:[],index:0,score:0,details:[],started:Date.now(),times:[]
+  };
+  for(let i=0;i<setupConfig.count;i++) session.questions.push(makeColumnQuestion(setupConfig.kind,setupConfig.year));
+  column={values:{},active:null};
+  showPage('columnMathPage');renderColumnQuestion();
+}
+function hasAdditionCarry(a,b,digits){
+  let carry=0;for(let p=0;p<digits;p++){const s=Math.floor(a/10**p)%10+Math.floor(b/10**p)%10+carry;if(s>=10)return true;carry=s>=10?1:0}return false;
+}
+function hasSubBorrow(a,b,digits){
+  let borrow=0;for(let p=0;p<digits;p++){let x=Math.floor(a/10**p)%10-borrow;const y=Math.floor(b/10**p)%10;if(x<y)return true;borrow=x<y?1:0}return false;
+}
+function makeColumnQuestion(kind,year){
+  const digits=digitCountForYear(year);
+  const min=10**(digits-1),max=10**digits-1;
+  let a,b,tries=0;
+  const wantExchange=Math.random()<.75;
+  do{
+    tries++;
+    if(kind==='addition'){
+      a=Math.floor(min+Math.random()*(max-min+1));
+      b=Math.floor(min+Math.random()*(max-min+1));
+      if(a+b>max){b=Math.max(min,max-a)}
+    }else{
+      a=Math.floor((min+10)+Math.random()*(max-(min+10)+1));
+      b=Math.floor(min+Math.random()*Math.max(1,(a-min)));
+    }
+  }while(tries<400 && (kind==='addition'?(a+b>max || (wantExchange && !hasAdditionCarry(a,b,digits))):((wantExchange && !hasSubBorrow(a,b,digits)))));
+  return {kind,year,digits,a,b,answer:kind==='addition'?a+b:a-b};
+}
+function renderColumnQuestion(){
+  const q=session.questions[session.index];
+  column.values={};column.active=`ans${q.digits-1}`;column.attemptedWrong=false;questionStarted=Date.now();
+  $('#columnTitle').textContent=q.kind==='addition'?'Column addition':'Column subtraction';
+  $('#columnMeta').textContent=`Year ${q.year} level · ${setupConfig.mode==='practice'?'Practise':'Challenge'}`;
+  $('#columnProgress').textContent=`Question ${session.index+1} of ${session.questions.length}`;
+  $('#columnFeedback').textContent='';$('#columnFeedback').className='feedback';
+  $('#columnLearnBox').classList.remove('open');$('#columnLearnBox').innerHTML='';
+  buildColumnGrid(q);selectColumnCell(column.active);
+  clearRoughCanvas();
+}
+function buildColumnGrid(q){
+  const grid=$('#columnGrid');grid.style.setProperty('--cols',q.digits);grid.innerHTML='';
+  const namesByDigits={2:['T','O'],3:['H','T','O'],4:['Th','H','T','O'],5:['TTh','Th','H','T','O'],6:['HTh','TTh','Th','H','T','O']};
+  const labels=namesByDigits[q.digits]||Array(q.digits).fill('');
+  const add=(tag,cls,text='')=>{const e=document.createElement(tag);e.className=cls;e.textContent=text;grid.appendChild(e);return e};
+
+  add('div','');
+  for(let i=0;i<q.digits;i++) add('div','small','');
+  add('div','');
+  for(let i=0;i<q.digits;i++){
+    const c=add('button','cell work','');c.type='button';c.dataset.cell=`work${i}`;c.setAttribute('aria-label',`Working box ${i+1}`);
+  }
+
+  add('div','');
+  for(const lab of labels) add('div',`place ${setupConfig.mode==='challenge'?'challengehidden':''}`,setupConfig.mode==='challenge'?'':lab);
+
+  const ad=String(q.a).padStart(q.digits,'0').split('');
+  add('div','');
+  ad.forEach(d=>add('div','digit',d));
+
+  const bd=String(q.b).padStart(q.digits,'0').split('');
+  add('div','op',q.kind==='addition'?'+':'−');
+  bd.forEach(d=>add('div','digit',d));
+
+  add('div','');
+  for(let i=0;i<q.digits;i++) add('div','rule','');
+
+  add('div','');
+  for(let i=0;i<q.digits;i++){
+    const c=add('button','cell ans','');c.type='button';c.dataset.cell=`ans${i}`;c.setAttribute('aria-label',`Answer box ${i+1}`);
+  }
+
+  $$('#columnGrid .cell').forEach(c=>c.addEventListener('click',()=>selectColumnCell(c.dataset.cell)));
+}
+function selectColumnCell(id){
+  column.active=id;
+  $$('#columnGrid .cell').forEach(c=>c.classList.toggle('active',c.dataset.cell===id));
+}
+$$('#columnKeypad [data-num]').forEach(b=>b.addEventListener('click',()=>columnInput(b.dataset.num)));
+function columnInput(n){
+  if(!column.active)return;
+  const max=column.active.startsWith('work')?2:1;
+  const cur=column.values[column.active]||'';
+  if(cur.length>=max)return;
+  column.values[column.active]=cur+n;
+  renderColumnCell(column.active);
+  if(column.active.startsWith('ans')){
+    const idx=Number(column.active.slice(3));
+    if(idx>0)selectColumnCell(`ans${idx-1}`);
+  }
+}
+function renderColumnCell(id){
+  const el=$(`#columnGrid [data-cell="${id}"]`);if(el)el.textContent=column.values[id]||'';
+}
+$('#columnBackspace').addEventListener('click',()=>{const id=column.active||'';column.values[id]=(column.values[id]||'').slice(0,-1);renderColumnCell(id)});
+$('#columnClear').addEventListener('click',()=>{const id=column.active||'';column.values[id]='';renderColumnCell(id)});
+$('#columnCheck').addEventListener('click',()=>{
+  const q=session.questions[session.index];
+  const str=Array.from({length:q.digits},(_,i)=>column.values[`ans${i}`]||'').join('');
+  if(!str.replace(/\s/g,'')){ $('#columnFeedback').textContent='Fill in your answer first.';return}
+  const answer=Number(str.replace(/^0+/,'')||0);
+  const correct=answer===q.answer;
+  session.times.push((Date.now()-questionStarted)/1000);
+  if(correct && !column.attemptedWrong)session.score++;else if(!correct){column.attemptedWrong=true;session.details.push(`${q.a.toLocaleString('en-GB')} ${q.kind==='addition'?'+':'−'} ${q.b.toLocaleString('en-GB')} = ${q.answer.toLocaleString('en-GB')}`);}
+  $('#columnFeedback').textContent=correct?'Correct! ⭐':'Not quite. Try again, or tap “Show me how”.';
+  $('#columnFeedback').className='feedback '+(correct?'good':'bad');
+  if(correct || setupConfig.mode==='challenge') setTimeout(nextColumn,correct?550:1000);
+});
+function nextColumn(){session.index++;if(session.index>=session.questions.length)finishSession();else renderColumnQuestion()}
+$('#columnLearnBtn').addEventListener('click',()=>{
+  const box=$('#columnLearnBox');box.innerHTML=columnExplanation(session.questions[session.index]);box.classList.add('open');
+  // Learn temporarily shows place-value names even in challenge
+  if(setupConfig.mode==='challenge'){
+    const q=session.questions[session.index];const labels={2:['T','O'],3:['H','T','O'],4:['Th','H','T','O'],5:['TTh','Th','H','T','O'],6:['HTh','TTh','Th','H','T','O']}[q.digits];
+    const places=$$('#columnGrid .place');places.forEach((p,i)=>p.textContent=labels[i]);
+  }
+});
+function columnExplanation(q){
+  const names=['ones','tens','hundreds','thousands','ten-thousands','hundred-thousands'];
+  const steps=[];
+  if(q.kind==='addition'){
+    let carry=0;
+    for(let p=0;p<q.digits;p++){
+      const x=Math.floor(q.a/10**p)%10,y=Math.floor(q.b/10**p)%10,old=carry,total=x+y+carry,d=total%10;
+      carry=total>=10?1:0;
+      let s=`<p><b>${cap(names[p])}:</b> ${x} + ${y}${old?` + ${old}`:''} = ${total}. Write <b>${d}</b>`;
+      if(carry&&p<q.digits-1)s+=` and exchange <b>1</b> into the next column.`;
+      else s+='.';
+      steps.push(s+'</p>');
+    }
+  }else{
+    let borrow=0;
+    for(let p=0;p<q.digits;p++){
+      const raw=Math.floor(q.a/10**p)%10,y=Math.floor(q.b/10**p)%10;
+      let x=raw-borrow;borrow=0;
+      if(x<y){x+=10;borrow=1;steps.push(`<p><b>${cap(names[p])}:</b> ${raw}${p===0?'':' after the previous exchange'} is not enough to subtract ${y}, so exchange from the next column. This gives ${x}. ${x} − ${y} = <b>${x-y}</b>.</p>`)}
+      else steps.push(`<p><b>${cap(names[p])}:</b> ${x} − ${y} = <b>${x-y}</b>.</p>`);
+    }
+  }
+  return `<h3>Let's work it out</h3><p>Start with the smallest place value on the right.</p>${steps.join('')}<p><b>Answer: ${q.answer.toLocaleString('en-GB')}</b></p>`;
+}
+function cap(s){return s.charAt(0).toUpperCase()+s.slice(1)}
+
+const roughCanvas=$('#roughCanvas'),roughCtx=roughCanvas.getContext('2d');
+$('#roughToggle').addEventListener('click',()=>{
+  roughCanvas.classList.toggle('open');
+  const open=roughCanvas.classList.contains('open');
+  $('#roughToggle').textContent=open?'Close':'Open';$('#roughClear').style.display=open?'inline-block':'none';
+});
+$('#roughClear').addEventListener('click',clearRoughCanvas);
+function clearRoughCanvas(){roughCtx.clearRect(0,0,roughCanvas.width,roughCanvas.height)}
+function canvasPoint(e){const r=roughCanvas.getBoundingClientRect();return{x:(e.clientX-r.left)*(roughCanvas.width/r.width),y:(e.clientY-r.top)*(roughCanvas.height/r.height)}}
+roughCanvas.addEventListener('pointerdown',e=>{canvasDrawing=true;const p=canvasPoint(e);roughCtx.beginPath();roughCtx.moveTo(p.x,p.y);roughCanvas.setPointerCapture?.(e.pointerId)});
+roughCanvas.addEventListener('pointermove',e=>{if(!canvasDrawing)return;const p=canvasPoint(e);roughCtx.lineWidth=4;roughCtx.lineCap='round';roughCtx.strokeStyle='#334155';roughCtx.lineTo(p.x,p.y);roughCtx.stroke()});
+['pointerup','pointercancel','pointerleave'].forEach(n=>roughCanvas.addEventListener(n,()=>canvasDrawing=false));
+
+const qRows={
+  qwerty:'QWERTYUIOP'.split(''),
+  asdf:'ASDFGHJKL'.split(''),
+  zxc:'ZXCVBNM'.split('')
+};
+for(const [row,letters] of Object.entries(qRows)){
+  const el=$(`#qwerty [data-row="${row}"]`);
+  letters.forEach(l=>{const b=document.createElement('button');b.type='button';b.textContent=l;b.dataset.letter=l.toLowerCase();el.appendChild(b)});
+  if(row==='zxc'){
+    const back=document.createElement('button');back.type='button';back.className='control';back.textContent='⌫';back.id='spellBackspace';el.appendChild(back);
+    const clear=document.createElement('button');clear.type='button';clear.className='control';clear.textContent='Clear';clear.id='spellClear';el.appendChild(clear);
+  }
+}
+let spell={};
+$$('#qwerty [data-letter]').forEach(b=>b.addEventListener('click',()=>{spell.answer=(spell.answer||'')+b.dataset.letter;renderSpellAnswer()}));
+$('#spellBackspace').addEventListener('click',()=>{spell.answer=(spell.answer||'').slice(0,-1);renderSpellAnswer()});
+$('#spellClear').addEventListener('click',()=>{spell.answer='';renderSpellAnswer()});
+function renderSpellAnswer(){$('#spellAnswer').textContent=spell.answer||'\u00a0'}
+
+$$('[data-spell]').forEach(btn=>btn.addEventListener('click',()=>startSpelling(btn.dataset.spell)));
+function spellingPool(kind){
+  const current=[];
+  const levels=state.spellingLevels.length?state.spellingLevels:[state.profile.schoolYear||4];
+  if(levels.includes(2)) current.push(...WORDS_YEAR2);
+  if(levels.some(y=>y===3||y===4)) current.push(...WORDS_YEAR34);
+  if(levels.some(y=>y===5||y===6)) current.push(...WORDS_YEAR56);
+  const base=uniq(current);
+  if(kind==='current')return base;
+  if(kind==='school')return state.schoolWords||[];
+  if(kind==='tricky')return state.trickyWords||[];
+  if(kind==='mixed')return uniq([...base,...(state.schoolWords||[]),...(state.trickyWords||[])]);
+  return base;
+}
+function startSpelling(kind){
+  const pool=spellingPool(kind);
+  if(!pool.length){alert(kind==='school'?'No weekly school spellings have been added yet.':kind==='tricky'?'There are no tricky words yet. Great!':'No spelling words are available for the selected levels.');return}
+  const count=Math.min(kind==='tricky'?Math.max(pool.length,5):10,Math.max(pool.length,10));
+  const words=[];
+  while(words.length<count){words.push(pick(pool))}
+  session={subject:'Spelling',activity:kind==='current'?'Current Levels':kind==='mixed'?'Mixed Spellings':kind==='school'?'Weekly School Spellings':'Tricky Words',mode:'practice',questions:words,index:0,score:0,details:[],started:Date.now(),times:[]};
+  spell={answer:'',kind,attemptedWrong:false};
+  showPage('spellingRunPage');$('#spellRunTitle').textContent=session.activity;renderSpellQuestion();
+}
+function renderSpellQuestion(){
+  spell.answer='';spell.attemptedWrong=false;questionStarted=Date.now();renderSpellAnswer();
+  $('#spellProgress').textContent=`Word ${session.index+1} of ${session.questions.length}`;
+  $('#spellFeedback').textContent='';$('#spellFeedback').className='feedback';
+  $('#spellLearnBox').classList.remove('open');$('#spellLearnBox').innerHTML='';
+  setTimeout(()=>speak(session.questions[session.index]),200);
+}
+$('#speakWordBtn').addEventListener('click',()=>speak(session.questions[session.index]));
+$('#speakSentenceBtn').addEventListener('click',()=>{
+  const w=session.questions[session.index];
+  speak(`I am learning to spell the word ${w} correctly.`);
+});
+$('#spellCheckBtn').addEventListener('click',()=>{
+  const target=session.questions[session.index],ans=(spell.answer||'').trim().toLowerCase();
+  if(!ans){$('#spellFeedback').textContent='Spell the word first.';return}
+  const correct=ans===target.toLowerCase();
+  if(correct){
+    if(!spell.attemptedWrong)session.score++;
+    recordWordCorrect(target);
+    session.times.push((Date.now()-questionStarted)/1000);
+    $('#spellFeedback').textContent='Correct! ⭐';$('#spellFeedback').className='feedback good';
+    setTimeout(nextSpell,550);
+  }else{
+    spell.attemptedWrong=true;recordWordWrong(target);
+    if(!session.details.includes(target))session.details.push(target);
+    $('#spellFeedback').textContent='Not quite. Try again, or tap “Show me how”.';$('#spellFeedback').className='feedback bad';
+  }
+});
+function nextSpell(){session.index++;if(session.index>=session.questions.length)finishSession();else renderSpellQuestion()}
+$('#spellLearnBtn').addEventListener('click',()=>{
+  const w=session.questions[session.index],box=$('#spellLearnBox');
+  box.innerHTML=`<h3>Let's look at it</h3><p>The word is <b style="font-size:1.25rem">${escapeHtml(w)}</b>.</p><p>Look carefully at the letter pattern. Say it slowly, then hide it and try again.</p><p class="small">It will stay in Tricky Words until it has been spelled correctly 3 times in a row.</p>`;
+  box.classList.add('open');speak(w,.75);
+});
+function recordWordWrong(word){
+  const key=word.toLowerCase();const st=state.wordStats[key]||{wrong:0,correctStreak:0};
+  st.wrong++;st.correctStreak=0;state.wordStats[key]=st;
+  if(!state.trickyWords.some(w=>w.toLowerCase()===key))state.trickyWords.push(word);
+  saveState();
+}
+function recordWordCorrect(word){
+  const key=word.toLowerCase();const st=state.wordStats[key]||{wrong:0,correctStreak:0};
+  st.correctStreak++;state.wordStats[key]=st;
+  if(st.correctStreak>=3)state.trickyWords=state.trickyWords.filter(w=>w.toLowerCase()!==key);
+  saveState();
+}
+
+function finishSession(){
+  stopTimer();
+  const seconds=Math.round((Date.now()-session.started)/1000);
+  const total=session.questions.length,score=session.score;
+  const accuracy=Math.round(score/total*100);
+  const earned=2+(accuracy>=80?2:0)+(accuracy===100?2:0);
+  state.stars+=earned;
+  const result={date:isoDay(),subject:session.subject,activity:session.activity,mode:session.mode,score,total,seconds,details:session.details||[]};
+  state.results.unshift(result);state.results=state.results.slice(0,200);saveState();
+  $('#resultTitle').textContent=`Great work, ${state.profile.name}!`;
+  $('#resultScore').textContent=`${score} / ${total}`;
+  $('#resultSummary').textContent=`You earned ${earned} star${earned===1?'':'s'} ⭐`;
+  const avg=session.times?.length?session.times.reduce((a,b)=>a+b,0)/session.times.length:0;
+  $('#resultStats').innerHTML=`<div class="stat"><b>${accuracy}%</b><span>accuracy</span></div><div class="stat"><b>${seconds}s</b><span>total time</span></div><div class="stat"><b>${avg?avg.toFixed(1)+'s':'—'}</b><span>average</span></div><div class="stat"><b>+${earned}</b><span>stars</span></div>`;
+  $('#resultDetails').innerHTML=(session.details&&session.details.length)?session.details.slice(0,12).map(x=>`<li>${escapeHtml(x)}</li>`).join(''):'<li>No mistakes to revisit 🎉</li>';
+  $('#resultAgain').onclick=()=>{
+    if(session.subject==='Spelling')startSpelling(spell.kind||'current');
+    else if(setupConfig.kind==='addition'||setupConfig.kind==='subtraction')startColumnMath();
+    else startBasicMath(setupConfig.kind);
+  };
+  showPage('resultPage');
+}
+function renderProgress(){
+  const results=state.results||[];
+  const today=isoDay();
+  const days=uniq(results.map(r=>r.date));
+  let streak=0,d=new Date();
+  for(;;){
+    const k=isoDay(d);if(days.includes(k)){streak++;d.setDate(d.getDate()-1)}else break;
+  }
+  const totalQs=results.reduce((s,r)=>s+(r.total||0),0),totalCorrect=results.reduce((s,r)=>s+(r.score||0),0);
+  const acc=totalQs?Math.round(totalCorrect/totalQs*100):0;
+  $('#progressStats').innerHTML=`<div class="stat"><b>${state.stars}</b><span>stars</span></div><div class="stat"><b>${streak}</b><span>day streak</span></div><div class="stat"><b>${acc}%</b><span>overall accuracy</span></div><div class="stat"><b>${state.trickyWords.length}</b><span>tricky words</span></div>`;
+  $('#recentResults').innerHTML=results.length?results.slice(0,12).map(r=>`<li><b>${r.date}</b> · ${escapeHtml(r.activity)} · ${r.score}/${r.total}${r.mode?` · ${escapeHtml(r.mode)}`:''}</li>`).join(''):'<li>No saved activities yet.</li>';
+  $('#trickyWordView').innerHTML=state.trickyWords.length?state.trickyWords.map(w=>`<span class="chip" style="display:inline-block;margin:4px">${escapeHtml(w)}</span>`).join(''):'<p>No tricky words at the moment 🎉</p>';
+}
+
+// MTC timeout automatically marks unanswered question
+const originalMarkBasic=markBasic;
+
+// keep first setup / parent values synced after load
+refreshAll();
+})();
+</script>
+</body>
+</html>
