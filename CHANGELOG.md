@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.2.6
+- Makes spelling “Check answer” the clear primary action with a large full-width button.
+- Replaces small colour-only spelling feedback with prominent accessible feedback panels.
+- Uses icons, headings, wording, border and background so feedback does not rely on red/green alone.
+- Makes “Show me how” more prominent after an incorrect answer.
+- Gives clearer prompts for empty answers and guided retries.
+
 ## v0.2.4
 - Simplified Parent speech-speed setting to two choices: Clear and Normal.
 - Clear is the default and recommended learning speed.
