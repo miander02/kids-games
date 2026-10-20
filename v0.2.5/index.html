@@ -680,6 +680,9 @@ function getVoice(){
   }
   const uk=voices.filter(v=>/en-GB/i.test(v.lang||''));
   const pool=uk.length?uk:voices;
+  const preferredGoogle=state.voiceGender==='male'?'google uk english male':'google uk english female';
+  const googleVoice=pool.find(v=>String(v.name).toLowerCase().includes(preferredGoogle));
+  if(googleVoice)return googleVoice;
   const femaleHints=['female','samantha','serena','susan','hazel','libby','sonia','fiona','victoria','karen','moira','veena','tessa'];
   const maleHints=['male','daniel','george','ryan','oliver','thomas','arthur','fred','alex'];
   const hints=state.voiceGender==='male'?maleHints:femaleHints;
@@ -707,7 +710,7 @@ function speak(text,rate=null){
   setTimeout(()=>speakNow(text,targetRate),220);
 }
 function speakWord(word,slow=false){
-  speak(String(word),slow?0.68:null);
+  speak(String(word),slow?0.55:null);
 }
 if('speechSynthesis' in window){
   populateVoiceOptions();
@@ -1200,9 +1203,9 @@ function spellingPool(kind){
 function startSpelling(kind){
   const pool=spellingPool(kind);
   if(!pool.length){alert(kind==='school'?'No weekly school spellings have been added yet.':kind==='tricky'?'There are no tricky words yet. Great!':'No spelling words are available for the selected levels.');return}
-  const count=Math.min(kind==='tricky'?Math.max(pool.length,5):10,Math.max(pool.length,10));
-  const words=[];
-  while(words.length<count){words.push(pick(pool))}
+  const words=shuffle(uniq(pool));
+  const count=Math.min(10,words.length);
+  words.length=count;
   session={subject:'Spelling',activity:kind==='current'?'Current Levels':kind==='mixed'?'Mixed Spellings':kind==='school'?'Weekly School Spellings':'Tricky Words',mode:'practice',questions:words,index:0,score:0,details:[],started:Date.now(),times:[]};
   spell={answer:'',kind,attemptedWrong:false};
   showPage('spellingRunPage');$('#spellRunTitle').textContent=session.activity;renderSpellQuestion();
@@ -1210,9 +1213,12 @@ function startSpelling(kind){
 function renderSpellQuestion(){
   spell.answer='';spell.attemptedWrong=false;questionStarted=Date.now();renderSpellAnswer();
   $('#spellProgress').textContent=`Word ${session.index+1} of ${session.questions.length}`;
-  $('#spellFeedback').textContent='';$('#spellFeedback').className='feedback';
+  const currentWord=session.questions[session.index];
+  const priorMistakes=(state.wordStats[currentWord.toLowerCase()]?.wrong||0)>0;
+  $('#spellFeedback').textContent=priorMistakes?'🔁 Practice word — this one was tricky before, so we’re giving it another go.':'';
+  $('#spellFeedback').className='feedback';
   $('#spellLearnBox').classList.remove('open');$('#spellLearnBox').innerHTML='';
-  setTimeout(()=>speakWord(session.questions[session.index]),260);
+  setTimeout(()=>speakWord(currentWord),260);
 }
 $('#speakWordBtn').addEventListener('click',()=>speakWord(session.questions[session.index]));
 $('#speakSlowBtn').addEventListener('click',()=>speakWord(session.questions[session.index],true));
