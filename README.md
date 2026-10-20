@@ -5,7 +5,7 @@ This repository contains versioned builds of the learning app.
 ## Current version
 The root `index.html` is a small launcher that redirects to the current release.
 
-Current release: **v0.2.2**
+Current release: **v0.2.6**
 
 ## Version folders
 - `v0.1.3/` — frozen reference build
@@ -29,4 +29,6 @@ The v0.1.3 build is retained as a portfolio/demo version at `/v0.1.3/`. Personal
 
 All newer versions use a generic app identity and store child-specific information as user-entered profile data rather than hard-coded names.
 
-- `v0.2.4/` — current release
+- `v0.2.4/` — clear/normal voice and favicon
+
+- `v0.2.6/` — current release
