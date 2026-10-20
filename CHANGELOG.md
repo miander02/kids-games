@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.2.4
+- Simplified Parent speech-speed setting to two choices: Clear and Normal.
+- Clear is the default and recommended learning speed.
+- Existing older speed choices fall back to Clear.
+- Kept “Hear slowly” as the extra-slow spelling replay option.
+- Added the ⭐ favicon.
+
 ## v0.2.3
 - Voice clarity update for spelling and spoken help.
 - Added actual device voice selector, with UK English voices listed first.
