@@ -28,3 +28,5 @@ The app stores learner progress locally in the browser. Keep data-format compati
 The v0.1.3 build is retained as a portfolio/demo version at `/v0.1.3/`. Personal child names have been removed from the public build. The placeholder `[Child Name]` demonstrates where personalisation appears in the interface.
 
 All newer versions use a generic app identity and store child-specific information as user-entered profile data rather than hard-coded names.
+
+- `v0.2.4/` — current release
