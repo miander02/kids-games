@@ -1186,7 +1186,7 @@ function renderSpellingHelp(word){
     </div>`;
 }
 
-$('[data-spell]').forEach(btn=>btn.addEventListener('click',()=>startSpelling(btn.dataset.spell)));
+document.querySelectorAll('[data-spell]').forEach(btn=>btn.addEventListener('click',()=>startSpelling(btn.dataset.spell)));
 function spellingPool(kind){
   const current=[];
   const levels=state.spellingLevels.length?state.spellingLevels:[state.profile.schoolYear||4];
