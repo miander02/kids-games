@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>Primary Learning App - Voice Lab</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⭐</text></svg>">
+  <style>
+    :root{--bg:#f6f8fb;--card:#fff;--text:#1f2937;--muted:#667085;--border:#dfe5ec;--accent:#315f9b;--good:#2f7d4a}
+    *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+    main{max-width:980px;margin:auto;padding:18px}.card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:18px;margin:0 0 14px}
+    h1{margin:0 0 4px} h2{margin:0 0 12px}.sub,.help{color:var(--muted)} label{font-weight:750;display:block;margin:12px 0 6px}
+    select,textarea,input[type=text]{width:100%;border:1px solid #cfd7e1;border-radius:12px;padding:11px;background:#fff;font:inherit}
+    textarea{min-height:110px;resize:vertical}.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}.buttons{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+    button,.buttonlink{border:0;border-radius:12px;padding:11px 15px;font:inherit;font-weight:750;background:var(--accent);color:#fff;text-decoration:none;display:inline-block;cursor:pointer}
+    button.secondary,.buttonlink.secondary{background:#fff;color:var(--text);border:1px solid var(--border)}.rating{display:flex;gap:8px;flex-wrap:wrap}
+    .rating button{min-width:46px;background:#fff;color:var(--text);border:1px solid var(--border)}.rating button.selected{background:#eaf2fb;border-color:#7f9fc3}
+    .candidate{border-top:1px solid var(--border);padding-top:14px;margin-top:14px}.status{font-weight:750;color:var(--good);min-height:1.4em}
+    .warning{background:#fff8e7;border:1px solid #ead59d;border-radius:12px;padding:10px 12px;color:#6d541e}
+    audio{width:100%;margin-top:10px}@media(max-width:720px){.row{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+<main>
+  <div class="card">
+    <h1>Voice Lab ⭐</h1>
+    <div class="sub">An isolated test page for choosing the clearest voice before it is integrated into the learning app.</div>
+    <div class="warning" style="margin-top:12px"><b>No API keys belong on this page.</b> Use provider playgrounds to create samples, then compare them here.</div>
+  </div>
+
+  <div class="card">
+    <h2>1. Browser/device baseline</h2>
+    <div class="row">
+      <div><label for="voice">Voice</label><select id="voice"></select></div>
+      <div><label for="rate">Speed</label><select id="rate"><option value=".65">Very slow</option><option value=".75">Clear / slow</option><option value=".82" selected>Clear</option><option value=".9">Normal</option><option value="1">Fast</option></select></div>
+    </div>
+    <label for="browserText">Test phrase</label>
+    <textarea id="browserText">Please spell the word February. February.
+
+Please spell the word breathe. Breathe.
+
+Seven times eight is fifty-six. Twelve times seven is eighty-four.</textarea>
+    <div class="buttons"><button id="speak">🔊 Speak</button><button class="secondary" id="stop">Stop</button></div>
+    <label>Clarity rating</label><div class="rating" data-rating="browser"></div>
+  </div>
+
+  <div class="card">
+    <h2>2. Use exactly the same test script with neural voice trials</h2>
+    <p class="help">Paste this into each provider's voice playground. Try two or three UK English voices, download a sample if the service allows it, then load the files below for side-by-side listening.</p>
+    <textarea id="trialText">Hello. This is a voice test for a primary learning app.
+
+Please spell the word February. February.
+Please spell the word favourite. Favourite.
+Please spell the word business. Business.
+Please spell the word breathe. Breathe.
+Please spell the word through. Through.
+Please spell the word separate. Separate.
+
+Seven times eight is fifty-six.
+Twelve times seven is eighty-four.
+Forty-two divided by six is seven.
+
+Listen carefully, then have a go.</textarea>
+    <div class="buttons"><button class="secondary" id="copyScript">Copy test script</button></div>
+  </div>
+
+  <div class="card">
+    <h2>3. Provider trials</h2>
+    <p class="help">These open separately. The lab itself does not send any learner data to them.</p>
+    <div class="buttons">
+      <a class="buttonlink secondary" href="https://speech.microsoft.com/portal/voicegallery" target="_blank" rel="noopener">Azure Voice Gallery</a>
+      <a class="buttonlink secondary" href="https://elevenlabs.io/app/speech-synthesis/text-to-speech" target="_blank" rel="noopener">ElevenLabs</a>
+      <a class="buttonlink secondary" href="https://cloud.google.com/text-to-speech" target="_blank" rel="noopener">Google Cloud TTS</a>
+      <a class="buttonlink secondary" href="https://aws.amazon.com/polly/" target="_blank" rel="noopener">Amazon Polly</a>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>4. Compare downloaded samples</h2>
+    <div id="candidates"></div>
+  </div>
+
+  <div class="card">
+    <h2>5. Notes</h2>
+    <textarea id="notes" placeholder="Which voice was easiest to understand? Any words it struggled with? Did it sound too fast, too grown-up, too robotic, too dramatic...?"></textarea>
+    <div class="buttons"><button id="saveNotes">Save notes on this device</button></div>
+    <div class="status" id="saved"></div>
+  </div>
+</main>
+<script>
+(() => {
+  const $=s=>document.querySelector(s);
+  const voices=()=>speechSynthesis.getVoices().filter(v=>/^en/i.test(v.lang||'')).sort((a,b)=>(/en-GB/i.test(a.lang)?0:1)-(/en-GB/i.test(b.lang)?0:1)||a.name.localeCompare(b.name));
+  function fill(){
+    const current=$('#voice').value, list=voices(); $('#voice').innerHTML='';
+    list.forEach(v=>{const o=document.createElement('option');o.value=v.voiceURI;o.textContent=v.name+' — '+v.lang+(/en-GB/i.test(v.lang)?' 🇬🇧':'');$('#voice').appendChild(o)});
+    if([...$('#voice').options].some(o=>o.value===current))$('#voice').value=current;
+  }
+  fill(); if('speechSynthesis' in window)speechSynthesis.onvoiceschanged=fill;
+  $('#speak').onclick=()=>{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance($('#browserText').value);const v=voices().find(x=>x.voiceURI===$('#voice').value);if(v){u.voice=v;u.lang=v.lang}u.rate=Number($('#rate').value);speechSynthesis.speak(u)};
+  $('#stop').onclick=()=>speechSynthesis.cancel();
+  $('#copyScript').onclick=async()=>{await navigator.clipboard.writeText($('#trialText').value);$('#copyScript').textContent='Copied';setTimeout(()=>$('#copyScript').textContent='Copy test script',1000)};
+
+  const savedRatings=JSON.parse(localStorage.getItem('voiceLabRatings')||'{}');
+  function rating(el,key){
+    for(let n=1;n<=5;n++){const b=document.createElement('button');b.textContent=n;b.onclick=()=>{savedRatings[key]=n;localStorage.setItem('voiceLabRatings',JSON.stringify(savedRatings));[...el.children].forEach((x,i)=>x.classList.toggle('selected',i<n))};el.appendChild(b)}
+    const n=savedRatings[key]||0;[...el.children].forEach((x,i)=>x.classList.toggle('selected',i<n));
+  }
+  rating(document.querySelector('[data-rating="browser"]'),'browser');
+
+  const holder=$('#candidates');
+  ['A','B','C'].forEach(letter=>{
+    const wrap=document.createElement('div');wrap.className='candidate';
+    wrap.innerHTML='<div class="row"><div><label>Candidate '+letter+' label</label><input type="text" class="label" placeholder="e.g. Azure Sonia / ElevenLabs voice name"></div><div><label>Audio file</label><input type="file" class="file" accept="audio/*"></div></div><audio controls></audio><label>Clarity rating</label><div class="rating"></div>';
+    holder.appendChild(wrap);
+    rating(wrap.querySelector('.rating'),'candidate'+letter);
+    const lab=wrap.querySelector('.label');lab.value=localStorage.getItem('voiceLabLabel'+letter)||'';lab.oninput=()=>localStorage.setItem('voiceLabLabel'+letter,lab.value);
+    wrap.querySelector('.file').onchange=e=>{const f=e.target.files[0];if(f)wrap.querySelector('audio').src=URL.createObjectURL(f)};
+  });
+
+  $('#notes').value=localStorage.getItem('voiceLabNotes')||'';
+  $('#saveNotes').onclick=()=>{localStorage.setItem('voiceLabNotes',$('#notes').value);$('#saved').textContent='Saved on this device.';setTimeout(()=>$('#saved').textContent='',1600)};
+})();
+</script>
+</body>
+</html>
