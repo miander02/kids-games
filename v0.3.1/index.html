@@ -600,7 +600,7 @@ function showPage(id){
   window.scrollTo(0,0);
   if(id==='progressPage') renderProgress();
 }
-$('[data-go]').forEach(b=>b.addEventListener('click',()=>showPage(b.dataset.go)));
+document.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>showPage(b.dataset.go)));
 document.querySelectorAll('#homePage [data-go]').forEach(b=>{
   b.addEventListener('pointerup',()=>showPage(b.dataset.go));
 });
@@ -1122,7 +1122,7 @@ for(const [row,letters] of Object.entries(qRows)){
   }
 }
 let spell={};
-$('#qwerty [data-letter]').forEach(b=>b.addEventListener('click',()=>{
+document.querySelectorAll('#qwerty [data-letter]').forEach(b=>b.addEventListener('click',()=>{
   $('#spellRecallPrompt').classList.remove('open');
   $('#spellRecallPrompt').innerHTML='';
   spell.answer=(spell.answer||'')+b.dataset.letter;
