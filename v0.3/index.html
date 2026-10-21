@@ -1383,7 +1383,7 @@ function renderSpellQuestion(){
     recall.classList.add('open');
     $('#spellRecallYes').addEventListener('click',()=>{
       recall.classList.remove('open');recall.innerHTML='';
-      setSpellFeedback('info','💪 Let's see','Spell it without help. You might surprise yourself.');
+      setSpellFeedback('info',"💪 Let's see",'Spell it without help. You might surprise yourself.');
       speakWord(currentWord);
     });
     $('#spellRecallHelp').addEventListener('click',()=>{
