@@ -1105,7 +1105,12 @@ for(const [row,letters] of Object.entries(qRows)){
   }
 }
 let spell={};
-$$('#qwerty [data-letter]').forEach(b=>b.addEventListener('click',()=>{spell.answer=(spell.answer||'')+b.dataset.letter;renderSpellAnswer()}));
+$('#qwerty [data-letter]').forEach(b=>b.addEventListener('click',()=>{
+  $('#spellRecallPrompt').classList.remove('open');
+  $('#spellRecallPrompt').innerHTML='';
+  spell.answer=(spell.answer||'')+b.dataset.letter;
+  renderSpellAnswer();
+}));
 $('#spellBackspace').addEventListener('click',()=>{spell.answer=(spell.answer||'').slice(0,-1);renderSpellAnswer()});
 $('#spellClear').addEventListener('click',()=>{spell.answer='';renderSpellAnswer()});
 function renderSpellAnswer(){$('#spellAnswer').textContent=spell.answer||'\u00a0'}
@@ -1310,7 +1315,6 @@ function renderLetterJumble(word){
 function renderJumbleSuccess(word){
   const box=$('#spellLearnBox');
   spell.assistedSolved=true;
-  session.challengeWins=(session.challengeWins||0)+1;
   const chunks=spellingChunks(word);
   const chunkHtml=chunks.map(x=>`<span class="word-chunk">${escapeHtml(x)}</span>`).join('<span aria-hidden="true">·</span>');
   const tips=spellingPatternTips(word).map(x=>`<li>${x}</li>`).join('');
@@ -1360,7 +1364,7 @@ function startSpelling(kind){
   showPage('spellingRunPage');$('#spellRunTitle').textContent=session.activity;renderSpellQuestion();
 }
 function renderSpellQuestion(){
-  spell.answer='';spell.attemptedWrong=false;spell.usedHelp=false;spell.assistedSolved=false;spell.learningRetry=false;spell.helpCountedThisQuestion=false;questionStarted=Date.now();renderSpellAnswer();
+  spell.answer='';spell.attemptedWrong=false;spell.usedHelp=false;spell.assistedSolved=false;spell.learningRetry=false;spell.helpCountedThisQuestion=false;spell.challengeCounted=false;questionStarted=Date.now();renderSpellAnswer();
   $('#spellProgress').textContent=`Word ${session.index+1} of ${session.questions.length}`;
   const currentWord=session.questions[session.index];
   const stats=state.wordStats[currentWord.toLowerCase()]||{};
@@ -1368,7 +1372,7 @@ function renderSpellQuestion(){
   $('#spellLearnBox').classList.remove('open');$('#spellLearnBox').innerHTML='';
   const recall=$('#spellRecallPrompt');
   recall.classList.remove('open');recall.innerHTML='';
-  const returning=(stats.wrong||0)>0 || stats.status==='learning' || stats.status==='remembering';
+  const returning=stats.status==='learning' || stats.status==='remembering' || ((stats.wrong||0)>0 && stats.status!=='secure');
   if(returning){
     recall.innerHTML=`<strong>🔁 You've seen this one before</strong>
       <div>You needed some help with it before. Think you've got it now?</div>
@@ -1408,6 +1412,10 @@ $('#spellCheckBtn').addEventListener('click',()=>{
     if(firstTry && ((before.wrong||0)>0 || before.status==='learning' || before.status==='remembering')){
       setSpellFeedback('good','🌟 You remembered it!','You needed help before, but you spelled it by yourself this time.');
     }else if(spell.usedHelp || spell.attemptedWrong){
+      if(!spell.challengeCounted){
+        session.challengeWins=(session.challengeWins||0)+1;
+        spell.challengeCounted=true;
+      }
       setSpellFeedback('good','⭐ You worked it out!','You kept going and finished the word. That counts as learning.');
     }else{
       setSpellFeedback('good','⭐ Great spelling!','You got it without help.');
