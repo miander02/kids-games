@@ -5,7 +5,7 @@ This repository contains versioned builds of the learning app.
 ## Current version
 The root `index.html` is a small launcher that redirects to the current release.
 
-Current release: **v0.3.1**
+Current release: **v0.3.2**
 
 ## Version folders
 - `v0.1.3/` — frozen reference build
@@ -33,4 +33,6 @@ All newer versions use a generic app identity and store child-specific informati
 
 - `v0.2.6/` — prominent spelling check and feedback UI
 
-- `v0.3.1/` — current live test release; repaired spelling learning flow
+- `v0.3.1/` — repaired spelling learning-flow test build
+
+- `v0.3.2/` — current release; central spelling workspace with progressive Jumble and Break it up help
