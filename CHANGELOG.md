@@ -1,5 +1,17 @@
 # Changelog
 
+## v0.3
+- Redesigns spelling help around challenge, learning and recall rather than revealing the answer.
+- “Show me how” first gives a non-answer clue while keeping the spelling hidden.
+- Adds an interactive jumbled-letter build activity for difficult words.
+- Only shows spelling chunks and pattern guidance after the learner has successfully built the word.
+- After building, hides the word again and asks for an independent spelling attempt.
+- Returning practice words now ask “Think you've got it now?” with a choice to be tested or take a clue.
+- Distinguishes normal first-try success, working a word out with help, and remembering a previously difficult word independently.
+- Adds New / Learning / Remembering / Secure word-state logic behind the scenes.
+- Practice words become secure after independent recall in later sessions rather than three immediate correct attempts.
+- Adds a small challenge-star reward for persisting through a difficult word.
+
 ## v0.2.6
 - Makes spelling “Check answer” the clear primary action with a large full-width button.
 - Replaces small colour-only spelling feedback with prominent accessible feedback panels.
