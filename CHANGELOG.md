@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.3.2
+- Moves spelling help into one central workspace directly above the keyboard.
+- Adds three clear stages: Try, Jumble and Break it up.
+- Jumble unlocks after the first incorrect attempt.
+- Break it up unlocks after the second incorrect attempt and shows authored spelling chunks and pattern guidance.
+- Jumble no longer reveals the full word after a successful build; the learner returns to an independent spelling attempt.
+- Returning practice words can choose to be tested or go straight to Jumble help.
+- Adds a visible Latest button that returns through the root launcher with a fresh query.
+- Root launcher now appends a timestamp to the current release URL to reduce stale-version caching.
+
 ## v0.3
 - Redesigns spelling help around challenge, learning and recall rather than revealing the answer.
 - “Show me how” first gives a non-answer clue while keeping the spelling hidden.
